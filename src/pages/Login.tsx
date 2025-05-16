@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,20 +12,30 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
+  const from = location.state?.from || '/admin';
 
   // Check if user is already logged in
   useEffect(() => {
     const checkUser = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        navigate('/admin');
+      try {
+        const { data } = await supabase.auth.getSession();
+        setIsCheckingAuth(false);
+        if (data.session) {
+          // If on the login page and already logged in, navigate to admin
+          navigate(from, { replace: true });
+        }
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+        setIsCheckingAuth(false);
       }
     };
 
     checkUser();
-  }, [navigate]);
+  }, [navigate, from]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,7 +58,7 @@ const Login: React.FC = () => {
           title: 'Welcome!',
           description: 'You have successfully logged in.',
         });
-        navigate('/admin');
+        navigate(from, { replace: true });
       }
     } catch (error) {
       console.error('Unexpected error during login:', error);
@@ -61,6 +71,10 @@ const Login: React.FC = () => {
       setIsLoading(false);
     }
   };
+
+  if (isCheckingAuth) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -106,9 +120,9 @@ const Login: React.FC = () => {
           </form>
           
           <div className="mt-6 text-center text-sm text-gray-500">
-            <p>This area is restricted to administrators only.</p>
+            <p>Esta área está restringida solo para administradores.</p>
             <p className="mt-2">
-              Return to the <a href="/" className="text-gold hover:text-gold-dark">home page</a>.
+              Volver a la <a href="/" className="text-gold hover:text-gold-dark">página principal</a>.
             </p>
           </div>
         </div>

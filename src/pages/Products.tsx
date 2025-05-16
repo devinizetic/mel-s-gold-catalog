@@ -64,12 +64,12 @@ const Products: React.FC = () => {
       
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
-          <h1 className="text-3xl font-serif font-medium text-gray-900">Our Jewelry Collection</h1>
+          <h1 className="text-3xl font-serif font-medium text-gray-900">Nuestra Colección de Joyas</h1>
           
           <div className="relative w-full md:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
             <Input
-              placeholder="Search products..."
+              placeholder="Buscar productos..."
               value={searchQuery}
               onChange={handleSearchChange}
               className="pl-10 w-full md:w-64"
@@ -99,9 +99,9 @@ const Products: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-16">
-            <h3 className="text-xl font-medium text-gray-700 mb-2">No products found</h3>
+            <h3 className="text-xl font-medium text-gray-700 mb-2">No se encontraron productos</h3>
             <p className="text-gray-500 mb-6">
-              Try changing your search criteria or category filter.
+              Intenta cambiar los criterios de búsqueda o el filtro de categoría.
             </p>
             <Button
               onClick={() => {
@@ -110,7 +110,7 @@ const Products: React.FC = () => {
               }}
               className="bg-gold hover:bg-gold-dark"
             >
-              Clear filters
+              Limpiar filtros
             </Button>
           </div>
         )}

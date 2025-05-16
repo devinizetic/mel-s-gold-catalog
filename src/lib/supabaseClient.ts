@@ -1,5 +1,6 @@
 
 import { supabase } from '@/integrations/supabase/client';
+import type { Database } from '@/integrations/supabase/types';
 
 export { supabase };
 
@@ -14,7 +15,7 @@ export async function getProducts() {
     return [];
   }
   
-  return data;
+  return data || [];
 }
 
 export async function getProductById(id: string) {
@@ -43,7 +44,7 @@ export async function getCategories() {
     return [];
   }
   
-  return data;
+  return data || [];
 }
 
 export async function getFeaturedProducts(limit = 4) {
@@ -59,10 +60,10 @@ export async function getFeaturedProducts(limit = 4) {
     return [];
   }
   
-  return data;
+  return data || [];
 }
 
-export async function createProduct(product: Partial<any>) {
+export async function createProduct(product: any) {
   const { data, error } = await supabase
     .from('products')
     .insert([product])
@@ -76,7 +77,7 @@ export async function createProduct(product: Partial<any>) {
   return data[0];
 }
 
-export async function updateProduct(id: string, product: Partial<any>) {
+export async function updateProduct(id: string, product: any) {
   const { data, error } = await supabase
     .from('products')
     .update(product)

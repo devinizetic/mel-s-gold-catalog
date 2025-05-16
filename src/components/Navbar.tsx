@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -8,6 +8,10 @@ const Navbar: React.FC = () => {
   const [user, setUser] = React.useState<any>(null);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // Check if we're on an admin page
+  const isAdminPage = location.pathname.startsWith('/admin');
 
   React.useEffect(() => {
     const checkUser = async () => {
@@ -50,12 +54,12 @@ const Navbar: React.FC = () => {
         </Link>
         <div className="flex space-x-6 items-center">
           <Link to="/" className="text-gray-800 hover:text-gold transition-colors">
-            Home
+            {isAdminPage ? 'Home' : 'Inicio'}
           </Link>
           <Link to="/products" className="text-gray-800 hover:text-gold transition-colors">
-            Products
+            {isAdminPage ? 'Products' : 'Productos'}
           </Link>
-          {user ? (
+          {user && isAdminPage && (
             <>
               <Link to="/admin" className="text-gray-800 hover:text-gold transition-colors">
                 Admin
@@ -64,13 +68,9 @@ const Navbar: React.FC = () => {
                 onClick={handleSignOut}
                 className="text-gray-800 hover:text-gold transition-colors"
               >
-                Sign Out
+                Cerrar Sesión
               </button>
             </>
-          ) : (
-            <Link to="/login" className="text-gray-800 hover:text-gold transition-colors">
-              Login
-            </Link>
           )}
         </div>
       </div>

@@ -37,14 +37,14 @@ const Index: React.FC = () => {
       <section className="relative bg-white">
         <div className="container mx-auto px-6 py-16 lg:py-24 flex flex-col items-center text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-gray-900 max-w-3xl">
-            Exquisite jewelry for every occasion
+            Joyas exquisitas para cada momento especial
           </h1>
           <p className="mt-6 text-xl text-gray-600 max-w-2xl">
-            Handcrafted pieces that tell your unique story. Our collection combines timeless elegance with contemporary design.
+            Piezas hechas a mano que cuentan tu historia única. Nuestra colección combina elegancia atemporal con diseño contemporáneo, desde Corrientes para el mundo.
           </p>
           <div className="mt-8">
             <Button asChild className="bg-gold hover:bg-gold-dark text-white px-8 py-6 rounded-md text-lg">
-              <Link to="/products">Explore Collection</Link>
+              <Link to="/products">Explorar Colección</Link>
             </Button>
           </div>
         </div>
@@ -54,9 +54,9 @@ const Index: React.FC = () => {
       <section className="bg-gray-50 py-16">
         <div className="container mx-auto px-6">
           <div className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-serif font-medium text-gray-900">Featured Jewelry</h2>
+            <h2 className="text-3xl font-serif font-medium text-gray-900">Joyas Destacadas</h2>
             <Link to="/products" className="text-gold hover:text-gold-dark transition-colors font-medium">
-              View All →
+              Ver Todo →
             </Link>
           </div>
           
@@ -77,21 +77,21 @@ const Index: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             <div className="w-full md:w-1/2 order-2 md:order-1">
-              <h2 className="text-3xl font-serif font-medium text-gray-900 mb-4">Our Story</h2>
+              <h2 className="text-3xl font-serif font-medium text-gray-900 mb-4">Nuestra Historia</h2>
               <p className="text-gray-600 mb-4">
-                Las Joyas de Mel began with a passion for creating unique pieces that celebrate individuality and beauty. 
-                Each item in our collection is thoughtfully designed and meticulously crafted to become treasured keepsakes.
+                Las Joyas de Mel comenzó con una pasión por crear piezas únicas que celebran la individualidad y la belleza. 
+                Cada elemento de nuestra colección está diseñado con esmero y elaborado meticulosamente para convertirse en recuerdos atesorados.
               </p>
               <p className="text-gray-600">
-                We source only the finest materials, ensuring that every piece not only looks stunning but stands the test of time.
-                Our commitment to quality and attention to detail is evident in every creation.
+                Utilizamos solo los mejores materiales, asegurando que cada pieza no solo luzca impresionante sino que resista el paso del tiempo.
+                Nuestro compromiso con la calidad y atención al detalle se evidencia en cada creación.
               </p>
             </div>
             <div className="w-full md:w-1/2 order-1 md:order-2">
               <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
                 <img 
                   src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8amV3ZWxyeSUyMHNob3B8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60" 
-                  alt="Jewelry workshop" 
+                  alt="Taller de joyería" 
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -103,14 +103,14 @@ const Index: React.FC = () => {
       {/* Newsletter/Contact */}
       <section className="bg-gray-100 py-16">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-serif font-medium text-gray-900 mb-4">Stay Updated</h2>
+          <h2 className="text-3xl font-serif font-medium text-gray-900 mb-4">Mantente Informado</h2>
           <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-            Be the first to know about new collections, special events, and exclusive offers.
+            Sé el primero en conocer nuestras nuevas colecciones, eventos especiales y ofertas exclusivas.
           </p>
           <div className="flex flex-col sm:flex-row gap-2 justify-center max-w-md mx-auto">
-            <Input placeholder="Your email address" className="sm:flex-1" />
+            <Input placeholder="Tu correo electrónico" className="sm:flex-1" />
             <Button className="bg-gold hover:bg-gold-dark whitespace-nowrap">
-              Subscribe
+              Suscribirse
             </Button>
           </div>
         </div>
@@ -121,14 +121,11 @@ const Index: React.FC = () => {
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-500 mb-4 md:mb-0">
-              © {new Date().getFullYear()} Las Joyas de Mel. All rights reserved.
+              © {new Date().getFullYear()} Las Joyas de Mel. Todos los derechos reservados.
             </p>
             <div className="flex space-x-6">
               <Link to="/products" className="text-gray-500 hover:text-gold transition-colors">
-                Products
-              </Link>
-              <Link to="/login" className="text-gray-500 hover:text-gold transition-colors">
-                Admin
+                Productos
               </Link>
             </div>
           </div>
