@@ -1,11 +1,5 @@
 
-import { createClient } from '@supabase/supabase-js';
-
-// These values should be set through the Supabase integration in the Lovable dashboard
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+import { supabase } from '@/integrations/supabase/client';
 
 export async function getProducts() {
   const { data, error } = await supabase
