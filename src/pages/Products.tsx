@@ -21,11 +21,11 @@ const Products: React.FC = () => {
     const loadData = async () => {
       setIsLoading(true);
       try {
-        const [productsData, categoriesData] = await Promise.all([
-          getProducts(),
-          getCategories()
-        ]);
-        setProducts(productsData);
+        const productsData = await getProducts();
+        const filteredProducts = productsData.filter(product => product.is_in_catalog);
+        setProducts(filteredProducts);
+        
+        const categoriesData = await getCategories();
         setCategories(categoriesData);
       } catch (error) {
         console.error('Error loading data:', error);

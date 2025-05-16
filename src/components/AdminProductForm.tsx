@@ -22,6 +22,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
   const [price, setPrice] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [inStock, setInStock] = useState(true);
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [isInCatalog, setIsInCatalog] = useState(true);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,6 +37,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
       setPrice(product.price.toString());
       setCategoryId(product.category_id);
       setInStock(product.in_stock);
+      setIsFeatured(product.is_featured || false);
+      setIsInCatalog(product.is_in_catalog !== false); // Default to true if undefined
       setImagePreview(product.image_url);
     }
   }, [product]);
@@ -56,8 +60,8 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
     
     if (!name || !description || !price || !categoryId) {
       toast({
-        title: 'Missing fields',
-        description: 'Please fill in all required fields.',
+        title: 'Campos incompletos',
+        description: 'Por favor complete todos los campos requeridos.',
         variant: 'destructive',
       });
       return;
@@ -78,20 +82,22 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         price: parseFloat(price),
         category_id: categoryId,
         in_stock: inStock,
+        is_featured: isFeatured,
+        is_in_catalog: isInCatalog,
         image_url: imageUrl,
       };
       
       if (product?.id) {
         await updateProduct(product.id, productData);
         toast({
-          title: 'Product updated',
-          description: 'The product has been updated successfully.',
+          title: 'Producto actualizado',
+          description: 'El producto ha sido actualizado exitosamente.',
         });
       } else {
         await createProduct(productData);
         toast({
-          title: 'Product created',
-          description: 'The product has been created successfully.',
+          title: 'Producto creado',
+          description: 'El producto ha sido creado exitosamente.',
         });
       }
       
@@ -99,7 +105,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
     } catch (error: any) {
       toast({
         title: 'Error',
-        description: error.message || 'Something went wrong.',
+        description: error.message || 'Algo salió mal.',
         variant: 'destructive',
       });
     } finally {
@@ -110,23 +116,23 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">Nombre</Label>
         <Input 
           id="name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="Product name"
+          placeholder="Nombre del producto"
           required
         />
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">Descripción</Label>
         <Textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Product description"
+          placeholder="Descripción del producto"
           required
           className="min-h-[120px]"
         />
@@ -134,7 +140,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="price">Price ($)</Label>
+          <Label htmlFor="price">Precio ($)</Label>
           <Input
             id="price"
             type="number"
@@ -148,13 +154,13 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         </div>
         
         <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
+          <Label htmlFor="category">Categoría</Label>
           <Select 
             value={categoryId} 
             onValueChange={setCategoryId}
           >
             <SelectTrigger>
-              <SelectValue placeholder="Select category" />
+              <SelectValue placeholder="Seleccionar categoría" />
             </SelectTrigger>
             <SelectContent>
               {categories.map((category) => (
@@ -167,17 +173,37 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         </div>
       </div>
       
-      <div className="flex items-center space-x-2">
-        <Switch 
-          id="in-stock" 
-          checked={inStock}
-          onCheckedChange={setInStock}
-        />
-        <Label htmlFor="in-stock">In Stock</Label>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="in-stock" 
+            checked={inStock}
+            onCheckedChange={setInStock}
+          />
+          <Label htmlFor="in-stock">En Stock</Label>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="is-featured" 
+            checked={isFeatured}
+            onCheckedChange={setIsFeatured}
+          />
+          <Label htmlFor="is-featured">Destacado</Label>
+        </div>
+        
+        <div className="flex items-center space-x-2">
+          <Switch 
+            id="is-in-catalog" 
+            checked={isInCatalog}
+            onCheckedChange={setIsInCatalog}
+          />
+          <Label htmlFor="is-in-catalog">Visible en Catálogo</Label>
+        </div>
       </div>
       
       <div className="space-y-2">
-        <Label htmlFor="image">Product Image</Label>
+        <Label htmlFor="image">Imagen del Producto</Label>
         <Input
           id="image"
           type="file"
@@ -188,7 +214,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         
         {imagePreview && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500 mb-2">Preview:</p>
+            <p className="text-sm text-gray-500 mb-2">Vista previa:</p>
             <img 
               src={imagePreview} 
               alt="Product preview" 
@@ -203,7 +229,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         className="bg-gold hover:bg-gold-dark"
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Saving...' : product ? 'Update Product' : 'Create Product'}
+        {isSubmitting ? 'Guardando...' : product ? 'Actualizar Producto' : 'Crear Producto'}
       </Button>
     </form>
   );

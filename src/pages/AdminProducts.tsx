@@ -121,13 +121,13 @@ const AdminProducts: React.FC = () => {
       await deleteProduct(productToDelete.id);
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       toast({
-        title: 'Product deleted',
-        description: 'The product has been deleted successfully.',
+        title: 'Producto eliminado',
+        description: 'El producto ha sido eliminado exitosamente.',
       });
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to delete the product.',
+        description: 'No se pudo eliminar el producto.',
         variant: 'destructive',
       });
     } finally {
@@ -148,7 +148,7 @@ const AdminProducts: React.FC = () => {
   };
 
   if (isCheckingAuth) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
   }
 
   if (!user) {
@@ -161,19 +161,22 @@ const AdminProducts: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-serif font-medium">Product Management</h1>
-            <p className="text-gray-500">Add, edit or remove products from your catalog</p>
+            <h1 className="text-3xl font-serif font-medium">Gestión de Productos</h1>
+            <p className="text-gray-500">Agregar, editar o eliminar productos del catálogo</p>
           </div>
           
           <div className="flex gap-4">
             <Button variant="outline" asChild>
-              <Link to="/admin">Back to Dashboard</Link>
+              <Link to="/admin">Volver al Panel</Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/admin/categories">Gestionar Categorías</Link>
             </Button>
             <Button 
               onClick={handleCreateProduct}
               className="bg-gold hover:bg-gold-dark"
             >
-              Add New Product
+              Agregar Producto
             </Button>
           </div>
         </div>
@@ -183,69 +186,83 @@ const AdminProducts: React.FC = () => {
         ) : (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             {products.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {products.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>
-                        <div className="h-12 w-12 bg-gray-100 rounded overflow-hidden">
-                          {product.image_url ? (
-                            <img
-                              src={product.image_url}
-                              alt={product.name}
-                              className="h-full w-full object-cover"
-                            />
-                          ) : (
-                            <div className="h-full w-full flex items-center justify-center text-gray-300 text-xs">
-                              No image
-                            </div>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-medium">{product.name}</TableCell>
-                      <TableCell>{(product as any).categories?.name || 'Uncategorized'}</TableCell>
-                      <TableCell>${product.price.toFixed(2)}</TableCell>
-                      <TableCell>
-                        <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
-                          {product.in_stock ? 'In Stock' : 'Out of Stock'}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditProduct(product)}
-                        >
-                          Edit
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteClick(product)}
-                        >
-                          Delete
-                        </Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Imagen</TableHead>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead>Categoría</TableHead>
+                      <TableHead>Precio</TableHead>
+                      <TableHead>Estado</TableHead>
+                      <TableHead>Destacado</TableHead>
+                      <TableHead>En Catálogo</TableHead>
+                      <TableHead className="text-right">Acciones</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {products.map((product) => (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <div className="h-12 w-12 bg-gray-100 rounded overflow-hidden">
+                            {product.image_url ? (
+                              <img
+                                src={product.image_url}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center text-gray-300 text-xs">
+                                No imagen
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{(product as any).categories?.name || 'Sin categoría'}</TableCell>
+                        <TableCell>${product.price.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
+                            {product.in_stock ? 'En Stock' : 'Agotado'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={product.is_featured ? "default" : "outline"} className={product.is_featured ? "bg-gold hover:bg-gold-dark border-gold" : ""}>
+                            {product.is_featured ? 'Destacado' : 'No destacado'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={product.is_in_catalog ? "default" : "secondary"} className={product.is_in_catalog ? "bg-blue-500 hover:bg-blue-600" : ""}>
+                            {product.is_in_catalog ? 'Visible' : 'Oculto'}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right space-x-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditProduct(product)}
+                          >
+                            Editar
+                          </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => handleDeleteClick(product)}
+                          >
+                            Eliminar
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             ) : (
               <div className="py-16 text-center">
-                <h3 className="text-xl font-medium text-gray-700 mb-2">No products yet</h3>
-                <p className="text-gray-500 mb-6">Start by adding your first product to the catalog.</p>
+                <h3 className="text-xl font-medium text-gray-700 mb-2">No hay productos</h3>
+                <p className="text-gray-500 mb-6">Comience agregando su primer producto al catálogo.</p>
                 <Button onClick={handleCreateProduct} className="bg-gold hover:bg-gold-dark">
-                  Add New Product
+                  Agregar Producto
                 </Button>
               </div>
             )}
@@ -258,7 +275,7 @@ const AdminProducts: React.FC = () => {
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {selectedProduct ? 'Edit Product' : 'Create New Product'}
+              {selectedProduct ? 'Editar Producto' : 'Crear Nuevo Producto'}
             </DialogTitle>
           </DialogHeader>
           <AdminProductForm
@@ -273,15 +290,15 @@ const AdminProducts: React.FC = () => {
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently delete {productToDelete?.name}. This action cannot be undone.
+              Esto eliminará permanentemente {productToDelete?.name}. Esta acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-              Delete
+              Eliminar
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

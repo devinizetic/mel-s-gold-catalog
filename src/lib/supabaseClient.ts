@@ -52,6 +52,8 @@ export async function getFeaturedProducts(limit = 4) {
     .from('products')
     .select('*, categories(name)')
     .eq('in_stock', true)
+    .eq('is_featured', true)
+    .eq('is_in_catalog', true)
     .order('created_at', { ascending: false })
     .limit(limit);
   
@@ -125,4 +127,48 @@ export async function uploadProductImage(file: File) {
     .getPublicUrl(filePath);
   
   return data.publicUrl;
+}
+
+// Category management functions
+export async function createCategory(category: { name: string }) {
+  const { data, error } = await supabase
+    .from('categories')
+    .insert([category])
+    .select();
+  
+  if (error) {
+    console.error('Error creating category:', error);
+    throw error;
+  }
+  
+  return data[0];
+}
+
+export async function updateCategory(id: string, category: { name: string }) {
+  const { data, error } = await supabase
+    .from('categories')
+    .update(category)
+    .eq('id', id)
+    .select();
+  
+  if (error) {
+    console.error('Error updating category:', error);
+    throw error;
+  }
+  
+  return data[0];
+}
+
+export async function deleteCategory(id: string) {
+  const { error } = await supabase
+    .from('categories')
+    .delete()
+    .eq('id', id);
+  
+  if (error) {
+    console.error('Error deleting category:', error);
+    throw error;
+  }
+  
+  return true;
 }

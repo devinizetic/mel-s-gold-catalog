@@ -7,6 +7,8 @@ export interface Product {
   category_id: string;
   image_url: string;
   in_stock: boolean;
+  is_featured: boolean;
+  is_in_catalog: boolean;
   created_at: string;
 }
 
