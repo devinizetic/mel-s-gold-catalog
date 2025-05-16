@@ -5,6 +5,7 @@ import { getFeaturedProducts } from '@/lib/supabaseClient';
 import ProductCard from '@/components/ProductCard';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Product } from '@/types';
 import Navbar from '@/components/Navbar';
 
