@@ -1,6 +1,8 @@
 
 import { supabase } from '@/integrations/supabase/client';
 
+export { supabase };
+
 export async function getProducts() {
   const { data, error } = await supabase
     .from('products')
