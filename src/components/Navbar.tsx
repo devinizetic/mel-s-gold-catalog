@@ -48,31 +48,25 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="bg-white border-b border-gray-100 py-4 px-6 w-full">
-      <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="font-serif text-2xl font-semibold gold-text">
+      <div className="container mx-auto flex justify-center items-center">
+        <Link to="/" className="font-serif text-2xl font-semibold text-gold">
           Las Joyas de Mel
         </Link>
-        <div className="flex space-x-6 items-center">
-          <Link to="/" className="text-gray-800 hover:text-gold transition-colors">
-            {isAdminPage ? 'Home' : 'Inicio'}
-          </Link>
-          <Link to="/products" className="text-gray-800 hover:text-gold transition-colors">
-            {isAdminPage ? 'Products' : 'Productos'}
-          </Link>
-          {user && isAdminPage && (
-            <>
-              <Link to="/admin" className="text-gray-800 hover:text-gold transition-colors">
-                Admin
-              </Link>
-              <button
-                onClick={handleSignOut}
-                className="text-gray-800 hover:text-gold transition-colors"
-              >
-                Cerrar Sesión
-              </button>
-            </>
-          )}
-        </div>
+        
+        {/* Only show these links on admin pages */}
+        {user && isAdminPage && (
+          <div className="absolute right-6 flex space-x-6 items-center">
+            <Link to="/admin" className="text-gray-800 hover:text-gold transition-colors">
+              Admin
+            </Link>
+            <button
+              onClick={handleSignOut}
+              className="text-gray-800 hover:text-gold transition-colors"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );

@@ -48,10 +48,10 @@ const ProductDetail: React.FC = () => {
       <div className="min-h-screen bg-white">
         <Navbar />
         <div className="container mx-auto px-6 py-16 text-center">
-          <h1 className="text-2xl font-serif font-medium text-gray-900 mb-4">Product Not Found</h1>
-          <p className="mb-8 text-gray-600">The product you're looking for doesn't exist or has been removed.</p>
+          <h1 className="text-2xl font-serif font-medium text-gray-900 mb-4">Producto No Encontrado</h1>
+          <p className="mb-8 text-gray-600">El producto que buscas no existe o ha sido eliminado.</p>
           <Button asChild className="bg-gold hover:bg-gold-dark">
-            <Link to="/products">Back to Products</Link>
+            <Link to="/products">Volver a Productos</Link>
           </Button>
         </div>
       </div>
@@ -64,7 +64,7 @@ const ProductDetail: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <Link to="/products" className="flex items-center text-gray-600 hover:text-gold mb-8 transition-colors">
           <ChevronLeft size={20} />
-          <span className="ml-1">Back to Products</span>
+          <span className="ml-1">Volver a Productos</span>
         </Link>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -77,7 +77,7 @@ const ProductDetail: React.FC = () => {
               />
             ) : (
               <div className="w-full h-64 flex items-center justify-center">
-                <span className="text-gray-400">No image available</span>
+                <span className="text-gray-400">No hay imagen disponible</span>
               </div>
             )}
           </div>
@@ -88,26 +88,18 @@ const ProductDetail: React.FC = () => {
             <div className="flex items-center gap-4 mt-4">
               <span className="text-2xl font-medium text-gold">${product.price.toFixed(2)}</span>
               <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
-                {product.in_stock ? 'In Stock' : 'Out of Stock'}
+                {product.in_stock ? 'En Stock' : 'Agotado'}
               </Badge>
             </div>
             
             <div className="mt-2">
               <span className="text-sm text-gray-500">
-                {product.categories?.name || 'Uncategorized'}
+                {product.categories?.name || 'Sin categoría'}
               </span>
             </div>
             
             <div className="border-t border-gray-200 my-6 pt-6">
-              <h2 className="font-serif font-medium text-lg mb-2">Description</h2>
               <p className="text-gray-700 whitespace-pre-line">{product.description}</p>
-            </div>
-            
-            <div className="mt-auto pt-6">
-              <p className="text-sm text-gray-500 mb-6">
-                Each piece is handcrafted with care and attention to detail. 
-                Due to the handmade nature, slight variations may occur, making each item unique.
-              </p>
             </div>
           </div>
         </div>
