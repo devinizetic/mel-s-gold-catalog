@@ -38,10 +38,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
         <div className="mt-2 flex justify-between items-center">
           <span className="text-sm text-gray-500">
-            {(product as any).categories?.name || 'Uncategorized'}
+            {(product as any).categories?.name || 'Sin categoría'}
           </span>
           <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
-            {product.in_stock ? 'In Stock' : 'Out of Stock'}
+            {product.in_stock ? 'En Stock' : 'Agotado'}
           </Badge>
         </div>
       </div>

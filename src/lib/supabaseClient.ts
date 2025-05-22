@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import type { Database } from '@/integrations/supabase/types';
 
@@ -130,7 +129,7 @@ export async function uploadProductImage(file: File) {
 }
 
 // Category management functions
-export async function createCategory(category: { name: string }) {
+export async function createCategory(category: { name: string, image_url?: string }) {
   const { data, error } = await supabase
     .from('categories')
     .insert([category])
@@ -144,7 +143,7 @@ export async function createCategory(category: { name: string }) {
   return data[0];
 }
 
-export async function updateCategory(id: string, category: { name: string }) {
+export async function updateCategory(id: string, category: { name?: string, image_url?: string }) {
   const { data, error } = await supabase
     .from('categories')
     .update(category)
@@ -171,4 +170,25 @@ export async function deleteCategory(id: string) {
   }
   
   return true;
+}
+
+export async function uploadCategoryImage(file: File) {
+  const fileExt = file.name.split('.').pop();
+  const fileName = `${Math.random().toString(36).substring(2, 15)}.${fileExt}`;
+  const filePath = `categories/${fileName}`;
+
+  const { error } = await supabase.storage
+    .from('category-images')
+    .upload(filePath, file);
+  
+  if (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
+  
+  const { data } = supabase.storage
+    .from('category-images')
+    .getPublicUrl(filePath);
+  
+  return data.publicUrl;
 }
