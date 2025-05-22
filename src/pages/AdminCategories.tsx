@@ -350,9 +350,9 @@ const AdminCategories: React.FC = () => {
                       type="button" 
                       variant="outline" 
                       className="cursor-pointer" 
-                      as="span"
+                      asChild
                     >
-                      {imagePreview ? "Cambiar Imagen" : "Seleccionar Imagen"}
+                      <span>{imagePreview ? "Cambiar Imagen" : "Seleccionar Imagen"}</span>
                     </Button>
                   </label>
                 </div>
