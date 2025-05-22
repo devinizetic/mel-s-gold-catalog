@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { getProducts, getCategories } from '@/lib/supabaseClient';
 import ProductCard from '@/components/ProductCard';
 import CategoryFilter from '@/components/CategoryFilter';
@@ -11,9 +12,12 @@ import { Search } from 'lucide-react';
 import Navbar from '@/components/Navbar';
 
 const Products: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(
+    searchParams.get('category')
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
@@ -56,6 +60,13 @@ const Products: React.FC = () => {
 
   const handleCategorySelect = (categoryId: string | null) => {
     setSelectedCategory(categoryId);
+    
+    // Update URL search params to reflect selected category
+    if (categoryId) {
+      setSearchParams({ category: categoryId });
+    } else {
+      setSearchParams({});
+    }
   };
 
   return (
@@ -107,6 +118,7 @@ const Products: React.FC = () => {
               onClick={() => {
                 setSearchQuery('');
                 setSelectedCategory(null);
+                setSearchParams({});
               }}
               className="bg-gold hover:bg-gold-dark"
             >

@@ -6,7 +6,8 @@ import {
   getCategories,
   createCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  uploadCategoryImage
 } from '@/lib/supabaseClient';
 import {
   Table,
@@ -38,6 +39,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Category } from '@/types';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import Navbar from '@/components/Navbar';
+import { Image } from 'lucide-react';
 
 const AdminCategories: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -49,6 +51,9 @@ const AdminCategories: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
   const [categoryName, setCategoryName] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   
   const { toast } = useToast();
 
@@ -98,12 +103,16 @@ const AdminCategories: React.FC = () => {
   const handleCreateCategory = () => {
     setSelectedCategory(null);
     setCategoryName('');
+    setImageFile(null);
+    setImagePreview(null);
     setIsDialogOpen(true);
   };
 
   const handleEditCategory = (category: Category) => {
     setSelectedCategory(category);
     setCategoryName(category.name);
+    setImagePreview(category.image_url || null);
+    setImageFile(null);
     setIsDialogOpen(true);
   };
 
@@ -134,6 +143,14 @@ const AdminCategories: React.FC = () => {
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -147,18 +164,32 @@ const AdminCategories: React.FC = () => {
     }
     
     try {
+      setIsUploading(true);
+      
+      // Upload image if provided
+      let imageUrl = selectedCategory?.image_url;
+      if (imageFile) {
+        imageUrl = await uploadCategoryImage(imageFile);
+      }
+      
       if (selectedCategory) {
-        await updateCategory(selectedCategory.id, { name: categoryName });
+        await updateCategory(selectedCategory.id, { 
+          name: categoryName,
+          ...(imageUrl !== selectedCategory.image_url ? { image_url: imageUrl } : {})
+        });
+        
         setCategories((prev) => 
-          prev.map((c) => (c.id === selectedCategory.id ? { ...c, name: categoryName } : c))
+          prev.map((c) => (c.id === selectedCategory.id ? { ...c, name: categoryName, image_url: imageUrl } : c))
         );
+        
         toast({
           title: 'Categoría actualizada',
           description: 'La categoría ha sido actualizada exitosamente.',
         });
       } else {
-        const newCategory = await createCategory({ name: categoryName });
+        const newCategory = await createCategory({ name: categoryName, image_url: imageUrl });
         setCategories((prev) => [...prev, newCategory]);
+        
         toast({
           title: 'Categoría creada',
           description: 'La categoría ha sido creada exitosamente.',
@@ -172,6 +203,8 @@ const AdminCategories: React.FC = () => {
         description: 'No se pudo guardar la categoría.',
         variant: 'destructive',
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -214,6 +247,7 @@ const AdminCategories: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Imagen</TableHead>
                     <TableHead>Nombre</TableHead>
                     <TableHead className="text-right">Acciones</TableHead>
                   </TableRow>
@@ -221,6 +255,21 @@ const AdminCategories: React.FC = () => {
                 <TableBody>
                   {categories.map((category) => (
                     <TableRow key={category.id}>
+                      <TableCell className="w-24">
+                        {category.image_url ? (
+                          <div className="h-16 w-16 rounded-md overflow-hidden">
+                            <img 
+                              src={category.image_url} 
+                              alt={category.name} 
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <div className="h-16 w-16 bg-gray-100 rounded-md flex items-center justify-center">
+                            <Image size={24} className="text-gray-400" />
+                          </div>
+                        )}
+                      </TableCell>
                       <TableCell className="font-medium">{category.name}</TableCell>
                       <TableCell className="text-right space-x-2">
                         <Button
@@ -265,18 +314,61 @@ const AdminCategories: React.FC = () => {
           </DialogHeader>
           <form onSubmit={handleFormSubmit} className="space-y-4">
             <div className="space-y-2">
+              <label htmlFor="categoryName" className="text-sm font-medium">Nombre</label>
               <Input
+                id="categoryName"
                 placeholder="Nombre de la categoría"
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
               />
             </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Imagen</label>
+              <div className="flex items-center space-x-4">
+                <div className="h-24 w-24 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+                  {imagePreview ? (
+                    <img 
+                      src={imagePreview} 
+                      alt="Previsualización" 
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Image size={24} className="text-gray-400" />
+                  )}
+                </div>
+                <div>
+                  <Input
+                    type="file"
+                    id="imageUpload"
+                    className="hidden"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                  />
+                  <label htmlFor="imageUpload">
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      className="cursor-pointer" 
+                      as="span"
+                    >
+                      {imagePreview ? "Cambiar Imagen" : "Seleccionar Imagen"}
+                    </Button>
+                  </label>
+                </div>
+              </div>
+            </div>
+            
             <div className="flex justify-end space-x-2">
               <Button type="button" variant="outline" onClick={() => setIsDialogOpen(false)}>
                 Cancelar
               </Button>
-              <Button type="submit" className="bg-gold hover:bg-gold-dark">
-                {selectedCategory ? 'Actualizar' : 'Crear'}
+              <Button 
+                type="submit" 
+                className="bg-gold hover:bg-gold-dark"
+                disabled={isUploading}
+              >
+                {isUploading ? 'Guardando...' : selectedCategory ? 'Actualizar' : 'Crear'}
               </Button>
             </div>
           </form>
