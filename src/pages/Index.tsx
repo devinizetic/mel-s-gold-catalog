@@ -4,6 +4,7 @@ import { getCategories } from "@/lib/supabaseClient";
 import CategoryCard from "@/components/CategoryCard";
 import SkeletonLoader from "@/components/SkeletonLoader";
 import { Category } from "@/types";
+import Navbar from "@/components/Navbar";
 
 const Index: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -27,15 +28,8 @@ const Index: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Simple Centered Header */}
-      <header className="bg-white py-6 md:py-8 border-b border-gray-100">
-        <div className="container mx-auto px-6">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-serif font-medium text-center text-gray-900">
-            Las Joyas de Mel
-          </h1>
-        </div>
-      </header>
-
+      <Navbar />
+      
       {/* Categories Grid */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
