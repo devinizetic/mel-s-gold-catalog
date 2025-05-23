@@ -43,13 +43,9 @@ const Index: React.FC = () => {
         </div>
       </section>
       
-      {/* Categories Grid */}
+      {/* Categories Grid - Removed the title as requested */}
       <section className="py-8 md:py-12">
         <div className="container mx-auto px-6">
-          <h2 className="text-2xl md:text-3xl font-serif font-medium text-center text-gray-900 mb-8">
-            Nuestras Categorías
-          </h2>
-          
           {isLoading ? (
             <SkeletonLoader type="card" count={4} />
           ) : (

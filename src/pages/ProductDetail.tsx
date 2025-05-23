@@ -82,7 +82,7 @@ const ProductDetail: React.FC = () => {
           <span className="ml-1">Volver a Productos</span>
         </Link>
         
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-20">
           <div className="bg-gray-50 rounded-xl overflow-hidden">
             {product.image_url ? (
               <img 
