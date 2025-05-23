@@ -5,6 +5,7 @@ import { getProducts, getCategories } from '@/lib/supabaseClient';
 import ProductCard from '@/components/ProductCard';
 import CategoryFilter from '@/components/CategoryFilter';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import WhatsAppButton from '@/components/WhatsAppButton';
 import { Product, Category } from '@/types';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -75,7 +76,10 @@ const Products: React.FC = () => {
       
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-start mb-8 gap-4">
-          <h1 className="text-3xl font-serif font-medium text-gray-900">Nuestra Colección de Joyas</h1>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-serif font-medium text-gray-900 mb-2">Nuestra Colección</h1>
+            <p className="text-gray-600">Descubre joyas únicas para cada ocasión especial</p>
+          </div>
           
           <div className="relative w-full md:w-auto">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
@@ -103,7 +107,7 @@ const Products: React.FC = () => {
         {isLoading ? (
           <SkeletonLoader type="card" count={8} />
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
@@ -127,6 +131,8 @@ const Products: React.FC = () => {
           </div>
         )}
       </div>
+      
+      <WhatsAppButton />
     </div>
   );
 };

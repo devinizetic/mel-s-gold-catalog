@@ -3,15 +3,20 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { getProductById } from '@/lib/supabaseClient';
 import { Badge } from '@/components/ui/badge';
-import SkeletonLoader from '@/components/SkeletonLoader';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import SkeletonLoader from '@/components/SkeletonLoader';
+import WhatsAppButton from '@/components/WhatsAppButton';
+import { ChevronLeft, ShoppingCart } from 'lucide-react';
+import { useCart } from '@/context/CartContext';
+import { useToast } from '@/components/ui/use-toast';
 import Navbar from '@/components/Navbar';
 
 const ProductDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { addItem } = useCart();
+  const { toast } = useToast();
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -30,6 +35,16 @@ const ProductDetail: React.FC = () => {
 
     loadProduct();
   }, [id]);
+
+  const handleAddToCart = () => {
+    if (!product || !product.in_stock) return;
+    
+    addItem(product);
+    toast({
+      title: 'Producto agregado',
+      description: `${product.name} se agregó al carrito`,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -67,43 +82,58 @@ const ProductDetail: React.FC = () => {
           <span className="ml-1">Volver a Productos</span>
         </Link>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="bg-gray-100 rounded-lg overflow-hidden">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-20">
+          <div className="bg-gray-50 rounded-xl overflow-hidden">
             {product.image_url ? (
               <img 
                 src={product.image_url} 
                 alt={product.name} 
-                className="w-full h-full object-contain aspect-square"
+                className="w-full h-full object-cover aspect-square"
               />
             ) : (
-              <div className="w-full h-64 flex items-center justify-center">
+              <div className="w-full aspect-square flex items-center justify-center">
                 <span className="text-gray-400">No hay imagen disponible</span>
               </div>
             )}
           </div>
           
-          <div className="flex flex-col">
-            <h1 className="font-serif text-3xl font-medium text-gray-900">{product.name}</h1>
-            
-            <div className="flex items-center gap-4 mt-4">
-              <span className="text-2xl font-medium text-gold">${product.price.toFixed(2)}</span>
-              <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
-                {product.in_stock ? 'En Stock' : 'Agotado'}
-              </Badge>
-            </div>
-            
-            <div className="mt-2">
-              <span className="text-sm text-gray-500">
+          <div className="flex flex-col justify-center space-y-6">
+            <div>
+              <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 mb-4">{product.name}</h1>
+              
+              <div className="flex items-center gap-4 mb-4">
+                <span className="text-3xl font-bold text-gold">${product.price.toFixed(2)}</span>
+                <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
+                  {product.in_stock ? 'En Stock' : 'Agotado'}
+                </Badge>
+              </div>
+              
+              <span className="text-sm text-gray-500 block mb-6">
                 {product.categories?.name || 'Sin categoría'}
               </span>
             </div>
             
-            <div className="border-t border-gray-200 my-6 pt-6">
-              <p className="text-gray-700 whitespace-pre-line">{product.description}</p>
+            <div className="prose prose-gray max-w-none">
+              <p className="text-gray-700 text-lg leading-relaxed whitespace-pre-line">{product.description}</p>
             </div>
+            
+            {product.in_stock && (
+              <div className="pt-4">
+                <Button
+                  onClick={handleAddToCart}
+                  size="lg"
+                  className="w-full sm:w-auto bg-gold hover:bg-gold-dark text-white px-8 py-3 text-lg"
+                >
+                  <ShoppingCart size={20} className="mr-2" />
+                  Agregar al Carrito
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>
+      
+      <WhatsAppButton />
     </div>
   );
 };

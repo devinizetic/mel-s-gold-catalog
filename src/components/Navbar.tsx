@@ -1,11 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/components/ui/use-toast';
+import { useCart } from '@/context/CartContext';
+import CartIcon from '@/components/CartIcon';
+import CartDrawer from '@/components/CartDrawer';
 
 const Navbar: React.FC = () => {
   const [user, setUser] = React.useState<any>(null);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -48,25 +52,34 @@ const Navbar: React.FC = () => {
 
   return (
     <nav className="bg-white border-b border-gray-100 py-4 px-6 w-full">
-      <div className="container mx-auto flex justify-center items-center">
+      <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="font-serif text-2xl font-semibold text-gold">
           Las Joyas de Mel
         </Link>
         
-        {/* Only show these links on admin pages */}
-        {user && isAdminPage && (
-          <div className="absolute right-6 flex space-x-6 items-center">
-            <Link to="/admin" className="text-gray-800 hover:text-gold transition-colors">
-              Admin
-            </Link>
-            <button
-              onClick={handleSignOut}
-              className="text-gray-800 hover:text-gold transition-colors"
-            >
-              Cerrar Sesión
-            </button>
-          </div>
-        )}
+        <div className="flex items-center space-x-4">
+          {/* Show cart icon on non-admin pages */}
+          {!isAdminPage && (
+            <CartDrawer isOpen={isCartOpen} onOpenChange={setIsCartOpen}>
+              <CartIcon onClick={() => setIsCartOpen(true)} />
+            </CartDrawer>
+          )}
+          
+          {/* Only show these links on admin pages */}
+          {user && isAdminPage && (
+            <div className="flex space-x-6 items-center">
+              <Link to="/admin" className="text-gray-800 hover:text-gold transition-colors">
+                Admin
+              </Link>
+              <button
+                onClick={handleSignOut}
+                className="text-gray-800 hover:text-gold transition-colors"
+              >
+                Cerrar Sesión
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );

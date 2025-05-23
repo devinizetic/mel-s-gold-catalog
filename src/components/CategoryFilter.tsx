@@ -22,7 +22,7 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
           className={selectedCategory === null ? "bg-gold hover:bg-gold-dark" : ""}
           onClick={() => onSelectCategory(null)}
         >
-          All
+          Todos
         </Button>
         {categories.map((category) => (
           <Button
