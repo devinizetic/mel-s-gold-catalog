@@ -1,14 +1,24 @@
 
-import React, { useState, useEffect } from 'react';
-import { useToast } from '@/components/ui/use-toast';
+import React, { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Product, Category } from '@/types';
 import { createProduct, updateProduct, uploadProductImage } from '@/lib/supabaseClient';
+import { productSchema, ProductFormData } from '@/schemas/productSchema';
 
 interface AdminProductFormProps {
   product?: Product;
@@ -17,73 +27,53 @@ interface AdminProductFormProps {
 }
 
 const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories, onSuccess }) => {
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [price, setPrice] = useState('');
-  const [categoryId, setCategoryId] = useState('');
-  const [inStock, setInStock] = useState(true);
-  const [isFeatured, setIsFeatured] = useState(false);
-  const [isInCatalog, setIsInCatalog] = useState(true);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const { toast } = useToast();
+
+  const form = useForm<ProductFormData>({
+    resolver: zodResolver(productSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      price: 0,
+      category_id: '',
+      in_stock: true,
+      is_featured: false,
+      is_in_catalog: true,
+      image: '',
+    },
+  });
 
   useEffect(() => {
     if (product) {
-      setName(product.name);
-      setDescription(product.description);
-      setPrice(product.price.toString());
-      setCategoryId(product.category_id);
-      setInStock(product.in_stock);
-      setIsFeatured(product.is_featured || false);
-      setIsInCatalog(product.is_in_catalog !== false); // Default to true if undefined
-      setImagePreview(product.image_url);
-    }
-  }, [product]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!name || !description || !price || !categoryId) {
-      toast({
-        title: 'Campos incompletos',
-        description: 'Por favor complete todos los campos requeridos.',
-        variant: 'destructive',
+      form.reset({
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        category_id: product.category_id,
+        in_stock: product.in_stock,
+        is_featured: product.is_featured || false,
+        is_in_catalog: product.is_in_catalog !== false,
+        image: '',
       });
-      return;
     }
+  }, [product, form]);
 
+  const onSubmit = async (data: ProductFormData) => {
     try {
-      setIsSubmitting(true);
-      
       let imageUrl = product?.image_url || '';
       
-      if (imageFile) {
-        imageUrl = await uploadProductImage(imageFile);
+      if (data.image instanceof File) {
+        imageUrl = await uploadProductImage(data.image);
       }
       
       const productData = {
-        name,
-        description,
-        price: parseFloat(price),
-        category_id: categoryId,
-        in_stock: inStock,
-        is_featured: isFeatured,
-        is_in_catalog: isInCatalog,
+        name: data.name,
+        description: data.description,
+        price: data.price,
+        category_id: data.category_id,
+        in_stock: data.in_stock,
+        is_featured: data.is_featured,
+        is_in_catalog: data.is_in_catalog,
         image_url: imageUrl,
       };
       
@@ -108,130 +98,185 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         description: error.message || 'Algo salió mal.',
         variant: 'destructive',
       });
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="space-y-2">
-        <Label htmlFor="name">Nombre</Label>
-        <Input 
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Nombre del producto"
-          required
-        />
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="description">Descripción</Label>
-        <Textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Descripción del producto"
-          required
-          className="min-h-[120px]"
-        />
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="price">Precio ($)</Label>
-          <Input
-            id="price"
-            type="number"
-            step="0.01"
-            min="0"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="0.00"
-            required
-          />
-        </div>
-        
-        <div className="space-y-2">
-          <Label htmlFor="category">Categoría</Label>
-          <Select 
-            value={categoryId} 
-            onValueChange={setCategoryId}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Seleccionar categoría" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.id} value={category.id}>
-                  {category.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="in-stock" 
-            checked={inStock}
-            onCheckedChange={setInStock}
-          />
-          <Label htmlFor="in-stock">En Stock</Label>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="is-featured" 
-            checked={isFeatured}
-            onCheckedChange={setIsFeatured}
-          />
-          <Label htmlFor="is-featured">Destacado</Label>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          <Switch 
-            id="is-in-catalog" 
-            checked={isInCatalog}
-            onCheckedChange={setIsInCatalog}
-          />
-          <Label htmlFor="is-in-catalog">Visible en Catálogo</Label>
-        </div>
-      </div>
-      
-      <div className="space-y-2">
-        <Label htmlFor="image">Imagen del Producto</Label>
-        <Input
-          id="image"
-          type="file"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="cursor-pointer"
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nombre</FormLabel>
+              <FormControl>
+                <Input placeholder="Nombre del producto" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
         
-        {imagePreview && (
-          <div className="mt-2">
-            <p className="text-sm text-gray-500 mb-2">Vista previa:</p>
-            <img 
-              src={imagePreview} 
-              alt="Product preview" 
-              className="h-40 w-auto object-contain border rounded-md" 
-            />
-          </div>
-        )}
-      </div>
-      
-      <Button 
-        type="submit" 
-        className="bg-gold hover:bg-gold-dark"
-        disabled={isSubmitting}
-      >
-        {isSubmitting ? 'Guardando...' : product ? 'Actualizar Producto' : 'Crear Producto'}
-      </Button>
-    </form>
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Descripción</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Descripción del producto"
+                  className="min-h-[120px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <FormField
+            control={form.control}
+            name="price"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Precio ($)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    placeholder="0.00"
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="category_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categoría</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar categoría" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FormField
+            control={form.control}
+            name="in_stock"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>En Stock</FormLabel>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="is_featured"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Destacado</FormLabel>
+              </FormItem>
+            )}
+          />
+          
+          <FormField
+            control={form.control}
+            name="is_in_catalog"
+            render={({ field }) => (
+              <FormItem className="flex items-center space-x-2">
+                <FormControl>
+                  <Switch
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <FormLabel>Visible en Catálogo</FormLabel>
+              </FormItem>
+            )}
+          />
+        </div>
+        
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field: { value, onChange, ...field } }) => (
+            <FormItem>
+              <FormLabel>Imagen del Producto</FormLabel>
+              <FormControl>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  className="cursor-pointer"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    onChange(file || '');
+                  }}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+              
+              {product?.image_url && (
+                <div className="mt-2">
+                  <p className="text-sm text-gray-500 mb-2">Imagen actual:</p>
+                  <img 
+                    src={product.image_url} 
+                    alt="Product preview" 
+                    className="h-40 w-auto object-contain border rounded-md" 
+                  />
+                </div>
+              )}
+            </FormItem>
+          )}
+        />
+        
+        <Button 
+          type="submit" 
+          className="bg-gold hover:bg-gold-dark"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? 'Guardando...' : product ? 'Actualizar Producto' : 'Crear Producto'}
+        </Button>
+      </form>
+    </Form>
   );
 };
 
