@@ -38,7 +38,7 @@ const Index: React.FC = () => {
             Joyas Únicas
           </h1>
           <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Descubre nuestra colección de joyas artesanales, creadas con amor y dedicación para momentos especiales.
+            Descubre nuestra selección exclusiva de joyas elegantes, cuidadosamente elegidas para cada ocasión especial.
           </p>
         </div>
       </section>
