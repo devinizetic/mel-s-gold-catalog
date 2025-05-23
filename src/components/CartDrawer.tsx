@@ -3,7 +3,8 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Minus, Trash2, MessageCircle, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, Trash2, ShoppingCart } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { Badge } from '@/components/ui/badge';
 
 interface CartDrawerProps {
@@ -109,7 +110,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onOpenChange, children 
                     onClick={handleWhatsAppOrder}
                     className="w-full bg-green-500 hover:bg-green-600 text-white"
                   >
-                    <MessageCircle size={16} className="mr-2" />
+                    <FaWhatsapp size={16} className="mr-2" />
                     Enviar Pedido por WhatsApp
                   </Button>
                   
