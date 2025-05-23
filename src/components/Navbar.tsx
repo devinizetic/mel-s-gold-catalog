@@ -51,7 +51,7 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <nav className="bg-white border-b border-gray-100 py-4 px-6 w-full">
+    <nav className="bg-white border-b border-gray-100 py-4 px-6 w-full sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="font-serif text-2xl font-semibold text-gold">
           Las Joyas de Mel
