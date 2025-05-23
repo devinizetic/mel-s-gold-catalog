@@ -3,7 +3,7 @@ import React from 'react';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Plus, Minus, Trash2, MessageCircle } from 'lucide-react';
+import { Plus, Minus, Trash2, MessageCircle, ShoppingCart } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface CartDrawerProps {
