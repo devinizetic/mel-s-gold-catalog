@@ -1,13 +1,14 @@
-
-import React from 'react';
-import { FaWhatsapp } from 'react-icons/fa';
+import React from "react";
+import { FaWhatsapp } from "react-icons/fa";
 
 const WhatsAppButton: React.FC = () => {
   const handleWhatsAppClick = () => {
-    const phoneNumber = "1234567890"; // Replace with actual WhatsApp number
+    const phoneNumber = "5493794906868"; // Replace with actual WhatsApp number
     const message = "¡Hola! Me interesa conocer más sobre sus joyas.";
-    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-    window.open(url, '_blank');
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      message
+    )}`;
+    window.open(url, "_blank");
   };
 
   return (
