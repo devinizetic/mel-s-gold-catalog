@@ -32,24 +32,47 @@ const Index: React.FC = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="py-12 md:py-16 bg-gradient-to-b from-gray-50 to-white">
-        <div className="container mx-auto px-6 text-center">
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-gray-900 mb-4">
-            Joyas Únicas
-          </h1>
-          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-            Descubre nuestra selección exclusiva de joyas elegantes, cuidadosamente elegidas para cada ocasión especial.
-          </p>
+      <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(194,158,113,0.1),transparent_50%)]"></div>
+        <div className="relative z-10 container mx-auto px-6 text-center">
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-gray-900 mb-8 tracking-wide">
+              Las Joyas de Mel
+            </h1>
+            <div className="w-24 h-px bg-gold mx-auto mb-8"></div>
+            <p className="text-xl md:text-2xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto mb-12">
+              Descubre nuestra selección exclusiva de joyas elegantes, cuidadosamente elegidas para cada ocasión especial.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <a 
+                href="/products" 
+                className="inline-flex items-center px-8 py-4 bg-gold text-white font-medium rounded-none hover:bg-gold-dark transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+              >
+                Explorar Colección
+              </a>
+              <a 
+                href="/products" 
+                className="inline-flex items-center px-8 py-4 border border-gold text-gold font-medium rounded-none hover:bg-gold hover:text-white transition-all duration-300"
+              >
+                Ver Categorías
+              </a>
+            </div>
+          </div>
         </div>
+        
+        {/* Decorative elements */}
+        <div className="absolute top-20 left-10 w-2 h-2 bg-gold rounded-full opacity-30 animate-pulse"></div>
+        <div className="absolute bottom-32 right-16 w-3 h-3 bg-gold-light rounded-full opacity-40 animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-20 w-1 h-1 bg-gold rounded-full opacity-50 animate-pulse delay-500"></div>
       </section>
       
-      {/* Categories Grid - Removed the title as requested */}
-      <section className="py-8 md:py-12">
+      {/* Categories Grid */}
+      <section className="py-16 md:py-24">
         <div className="container mx-auto px-6">
           {isLoading ? (
             <SkeletonLoader type="card" count={4} />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
               {categories.map((category) => (
                 <CategoryCard key={category.id} category={category} />
               ))}
@@ -70,7 +93,7 @@ const Index: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 py-8 mt-16">
+      <footer className="bg-gray-50 border-t border-gray-200 py-12 mt-16">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-500 mb-4 md:mb-0">
