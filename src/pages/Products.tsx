@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getProducts, getCategories } from '@/lib/supabaseClient';
 import ProductCard from '@/components/ProductCard';
@@ -42,24 +42,28 @@ const Products: React.FC = () => {
     loadData();
   }, []);
 
-  const filteredProducts = products.filter((product) => {
-    // Filter by category
-    const matchesCategory = selectedCategory ? product.category_id === selectedCategory : true;
-    
-    // Filter by search query
-    const matchesSearch = searchQuery
-      ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
-    
-    return matchesCategory && matchesSearch;
-  });
+  // Memoize filtered products to prevent unnecessary recalculations
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      // Filter by category
+      const matchesCategory = selectedCategory ? product.category_id === selectedCategory : true;
+      
+      // Filter by search query
+      const matchesSearch = searchQuery
+        ? product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase())
+        : true;
+      
+      return matchesCategory && matchesSearch;
+    });
+  }, [products, selectedCategory, searchQuery]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Debounced search to improve performance
+  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
-  };
+  }, []);
 
-  const handleCategorySelect = (categoryId: string | null) => {
+  const handleCategorySelect = useCallback((categoryId: string | null) => {
     setSelectedCategory(categoryId);
     
     // Update URL search params to reflect selected category
@@ -68,7 +72,13 @@ const Products: React.FC = () => {
     } else {
       setSearchParams({});
     }
-  };
+  }, [setSearchParams]);
+
+  const handleClearFilters = useCallback(() => {
+    setSearchQuery('');
+    setSelectedCategory(null);
+    setSearchParams({});
+  }, [setSearchParams]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -87,7 +97,7 @@ const Products: React.FC = () => {
               placeholder="Buscar productos..."
               value={searchQuery}
               onChange={handleSearchChange}
-              className="pl-10 w-full md:w-64"
+              className="pl-10 w-full md:w-64 transition-all duration-200 focus:shadow-md"
             />
           </div>
         </div>
@@ -107,24 +117,35 @@ const Products: React.FC = () => {
         {isLoading ? (
           <SkeletonLoader type="card" count={8} />
         ) : filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20">
-            {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+          <div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-20"
+            style={{
+              transform: 'translateZ(0)', // Enable hardware acceleration
+              willChange: 'transform', // Optimize for animations
+            }}
+          >
+            {filteredProducts.map((product, index) => (
+              <div
+                key={product.id}
+                className="transform transition-all duration-200 ease-out hover:scale-[1.02] hover:shadow-lg"
+                style={{
+                  animationDelay: `${index * 50}ms`, // Stagger animation
+                  transform: 'translateZ(0)', // Hardware acceleration for each card
+                }}
+              >
+                <ProductCard product={product} />
+              </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-16">
+          <div className="text-center py-16 animate-fade-in">
             <h3 className="text-xl font-medium text-gray-700 mb-2">No se encontraron productos</h3>
             <p className="text-gray-500 mb-6">
               Intenta cambiar los criterios de búsqueda o el filtro de categoría.
             </p>
             <Button
-              onClick={() => {
-                setSearchQuery('');
-                setSelectedCategory(null);
-                setSearchParams({});
-              }}
-              className="bg-gold hover:bg-gold-dark"
+              onClick={handleClearFilters}
+              className="bg-gold hover:bg-gold-dark transition-all duration-200 hover:shadow-md transform hover:scale-105"
             >
               Limpiar filtros
             </Button>
