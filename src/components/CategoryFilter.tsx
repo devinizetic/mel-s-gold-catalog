@@ -1,7 +1,6 @@
 
 import React from 'react';
 import { Category } from '@/types';
-import { Button } from '@/components/ui/button';
 
 interface CategoryFilterProps {
   categories: Category[];
@@ -16,23 +15,29 @@ const CategoryFilter: React.FC<CategoryFilterProps> = ({
 }) => {
   return (
     <div className="w-full overflow-x-auto pb-2">
-      <div className="flex space-x-2 min-w-max">
-        <Button
-          variant={selectedCategory === null ? "default" : "outline"}
-          className={selectedCategory === null ? "bg-gold hover:bg-gold-dark" : ""}
+      <div className="flex space-x-3 min-w-max">
+        <button
           onClick={() => onSelectCategory(null)}
+          className={`inline-flex items-center justify-center px-6 py-3 font-medium tracking-wide transition-all duration-300 min-w-[120px] ${
+            selectedCategory === null
+              ? 'bg-gold text-white hover:bg-gold-dark'
+              : 'border-2 border-gold text-gold hover:bg-gold hover:text-white'
+          }`}
         >
           Todos
-        </Button>
+        </button>
         {categories.map((category) => (
-          <Button
+          <button
             key={category.id}
-            variant={selectedCategory === category.id ? "default" : "outline"}
-            className={selectedCategory === category.id ? "bg-gold hover:bg-gold-dark" : ""}
             onClick={() => onSelectCategory(category.id)}
+            className={`inline-flex items-center justify-center px-6 py-3 font-medium tracking-wide transition-all duration-300 min-w-[120px] ${
+              selectedCategory === category.id
+                ? 'bg-gold text-white hover:bg-gold-dark'
+                : 'border-2 border-gold text-gold hover:bg-gold hover:text-white'
+            }`}
           >
             {category.name}
-          </Button>
+          </button>
         ))}
       </div>
     </div>

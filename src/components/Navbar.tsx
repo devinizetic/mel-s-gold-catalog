@@ -55,9 +55,9 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center">
         <Link to="/" className="flex items-center justify-center">
           <img 
-            src="/lovable-uploads/205513e5-cdc8-4921-a187-639da1536fab.png" 
+            src="/lovable-uploads/41f07c5f-640c-47cf-9680-f2dfe353818a.png" 
             alt="Las Joyas de Mel" 
-            className="h-12 w-auto"
+            className="h-16 w-auto"
           />
         </Link>
         
