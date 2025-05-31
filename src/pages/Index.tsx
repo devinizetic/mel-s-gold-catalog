@@ -27,48 +27,88 @@ const Index: React.FC = () => {
     loadCategories();
   }, []);
 
+  const scrollToCategories = () => {
+    const categoriesSection = document.getElementById('categories-section');
+    if (categoriesSection) {
+      categoriesSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(194,158,113,0.1),transparent_50%)]"></div>
+      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+        {/* Background with subtle pattern */}
+        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(194,158,113,0.08),transparent_50%)]"></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(194,158,113,0.05),transparent_50%)]"></div>
+        </div>
+        
         <div className="relative z-10 container mx-auto px-6 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-gray-900 mb-8 tracking-wide">
+          <div className="max-w-5xl mx-auto">
+            {/* Main heading */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-light text-gray-900 mb-6 tracking-wide leading-tight">
               Las Joyas de Mel
             </h1>
-            <div className="w-24 h-px bg-gold mx-auto mb-8"></div>
-            <p className="text-xl md:text-2xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto mb-12">
+            
+            {/* Decorative line */}
+            <div className="flex items-center justify-center mb-8">
+              <div className="w-16 h-px bg-gold"></div>
+              <div className="w-3 h-3 bg-gold rounded-full mx-4"></div>
+              <div className="w-16 h-px bg-gold"></div>
+            </div>
+            
+            {/* Subtitle */}
+            <p className="text-lg md:text-xl text-gray-600 font-light leading-relaxed max-w-3xl mx-auto mb-12">
               Descubre nuestra selección exclusiva de joyas elegantes, cuidadosamente elegidas para cada ocasión especial.
             </p>
+            
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <a 
                 href="/products" 
-                className="inline-flex items-center px-8 py-4 bg-gold text-white font-medium rounded-none hover:bg-gold-dark transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
+                className="group inline-flex items-center justify-center px-8 py-4 bg-gold text-white font-medium tracking-wide hover:bg-gold-dark transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 min-w-[200px]"
               >
-                Explorar Colección
+                <span>Explorar Colección</span>
+                <svg className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
               </a>
-              <a 
-                href="/products" 
-                className="inline-flex items-center px-8 py-4 border border-gold text-gold font-medium rounded-none hover:bg-gold hover:text-white transition-all duration-300"
+              <button 
+                onClick={scrollToCategories}
+                className="group inline-flex items-center justify-center px-8 py-4 border-2 border-gold text-gold font-medium tracking-wide hover:bg-gold hover:text-white transition-all duration-300 min-w-[200px]"
               >
-                Ver Categorías
-              </a>
+                <span>Ver Categorías</span>
+                <svg className="ml-2 w-4 h-4 transition-transform group-hover:translate-y-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>
         
-        {/* Decorative elements */}
-        <div className="absolute top-20 left-10 w-2 h-2 bg-gold rounded-full opacity-30 animate-pulse"></div>
-        <div className="absolute bottom-32 right-16 w-3 h-3 bg-gold-light rounded-full opacity-40 animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-20 w-1 h-1 bg-gold rounded-full opacity-50 animate-pulse delay-500"></div>
+        {/* Floating decorative elements */}
+        <div className="absolute top-1/4 left-8 w-2 h-2 bg-gold rounded-full opacity-40 animate-pulse"></div>
+        <div className="absolute bottom-1/3 right-12 w-3 h-3 bg-gold-light rounded-full opacity-30 animate-pulse delay-1000"></div>
+        <div className="absolute top-2/3 left-16 w-1 h-1 bg-gold rounded-full opacity-50 animate-pulse delay-500"></div>
+        <div className="absolute top-1/3 right-20 w-1.5 h-1.5 bg-gold-dark rounded-full opacity-35 animate-pulse delay-700"></div>
       </section>
       
       {/* Categories Grid */}
-      <section className="py-16 md:py-24">
+      <section id="categories-section" className="py-20 md:py-28">
         <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-serif font-light text-gray-900 mb-4">
+              Nuestras Categorías
+            </h2>
+            <div className="w-16 h-px bg-gold mx-auto"></div>
+          </div>
+          
           {isLoading ? (
             <SkeletonLoader type="card" count={4} />
           ) : (
