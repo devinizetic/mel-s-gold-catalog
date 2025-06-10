@@ -35,6 +35,8 @@ export type Database = {
           category_id: string | null
           created_at: string | null
           description: string | null
+          discount_percentage: number | null
+          discount_type: string | null
           id: string
           image_url: string | null
           in_stock: boolean | null
@@ -48,6 +50,8 @@ export type Database = {
           category_id?: string | null
           created_at?: string | null
           description?: string | null
+          discount_percentage?: number | null
+          discount_type?: string | null
           id?: string
           image_url?: string | null
           in_stock?: boolean | null
@@ -61,6 +65,8 @@ export type Database = {
           category_id?: string | null
           created_at?: string | null
           description?: string | null
+          discount_percentage?: number | null
+          discount_type?: string | null
           id?: string
           image_url?: string | null
           in_stock?: boolean | null

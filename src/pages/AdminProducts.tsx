@@ -37,6 +37,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Product, Category } from '@/types';
 import AdminProductForm from '@/components/AdminProductForm';
 import SkeletonLoader from '@/components/SkeletonLoader';
+import PriceDisplay from '@/components/PriceDisplay';
 import Navbar from '@/components/Navbar';
 
 const AdminProducts: React.FC = () => {
@@ -147,6 +148,19 @@ const AdminProducts: React.FC = () => {
     }
   };
 
+  const getDiscountTypeLabel = (type: string) => {
+    switch (type) {
+      case 'cash':
+        return 'Efectivo';
+      case 'card':
+        return 'Tarjeta';
+      case 'all':
+        return 'Todos';
+      default:
+        return 'Todos';
+    }
+  };
+
   if (isCheckingAuth) {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
   }
@@ -194,6 +208,8 @@ const AdminProducts: React.FC = () => {
                       <TableHead>Nombre</TableHead>
                       <TableHead>Categoría</TableHead>
                       <TableHead>Precio</TableHead>
+                      <TableHead>Descuento</TableHead>
+                      <TableHead>Tipo Descuento</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Destacado</TableHead>
                       <TableHead>En Catálogo</TableHead>
@@ -220,7 +236,32 @@ const AdminProducts: React.FC = () => {
                         </TableCell>
                         <TableCell className="font-medium">{product.name}</TableCell>
                         <TableCell>{(product as any).categories?.name || 'Sin categoría'}</TableCell>
-                        <TableCell>${product.price.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <PriceDisplay 
+                            price={product.price} 
+                            discountPercentage={product.discount_percentage || 0}
+                            size="sm"
+                            showBadge={false}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          {product.discount_percentage > 0 ? (
+                            <Badge className="bg-red-500 text-white">
+                              -{product.discount_percentage}%
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400 text-sm">Sin descuento</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {product.discount_percentage > 0 ? (
+                            <Badge variant="outline" className="text-xs">
+                              {getDiscountTypeLabel(product.discount_type || 'all')}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400 text-sm">-</span>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
                             {product.in_stock ? 'En Stock' : 'Agotado'}
@@ -300,7 +341,7 @@ const AdminProducts: React.FC = () => {
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Eliminar
             </AlertDialogAction>
-          </AlertDialogFooter>
+            </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

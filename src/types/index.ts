@@ -9,6 +9,8 @@ export interface Product {
   in_stock: boolean;
   is_featured: boolean;
   is_in_catalog: boolean;
+  discount_percentage: number;
+  discount_type: string; // Changed from union type to string to match database
   created_at: string;
 }
 

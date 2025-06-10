@@ -6,9 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import WhatsAppButton from '@/components/WhatsAppButton';
+import PriceDisplay from '@/components/PriceDisplay';
+import DiscountLegend from '@/components/DiscountLegend';
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/components/ui/use-toast';
+import { useDiscountCalculation } from '@/hooks/useDiscountCalculation';
 import Navbar from '@/components/Navbar';
 
 const ProductDetail: React.FC = () => {
@@ -35,6 +38,11 @@ const ProductDetail: React.FC = () => {
 
     loadProduct();
   }, [id]);
+
+  const { hasDiscount, discountAmount } = useDiscountCalculation(
+    product?.price || 0, 
+    product?.discount_percentage || 0
+  );
 
   const handleAddToCart = () => {
     if (!product || !product.in_stock) return;
@@ -83,7 +91,15 @@ const ProductDetail: React.FC = () => {
         </Link>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pb-20">
-          <div className="bg-gray-50 rounded-xl overflow-hidden">
+          <div className="bg-gray-50 rounded-xl overflow-hidden relative">
+            {hasDiscount && (
+              <div className="absolute top-4 left-4 z-10">
+                <Badge className="bg-red-500 text-white text-sm px-3 py-1.5 font-medium">
+                  -{product.discount_percentage}% OFF
+                </Badge>
+              </div>
+            )}
+            
             {product.image_url ? (
               <img 
                 src={product.image_url} 
@@ -101,16 +117,36 @@ const ProductDetail: React.FC = () => {
             <div>
               <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 mb-4">{product.name}</h1>
               
-              <div className="flex items-center gap-4 mb-4">
-                <span className="text-3xl font-bold text-gold">${product.price.toFixed(2)}</span>
+              <div className="mb-4">
+                <PriceDisplay 
+                  price={product.price} 
+                  discountPercentage={product.discount_percentage || 0}
+                  size="lg"
+                  showBadge={false}
+                />
+                
+                <DiscountLegend 
+                  discountType={product.discount_type || 'all'} 
+                  hasDiscount={hasDiscount}
+                  className="mt-2 text-sm"
+                />
+                
+                {hasDiscount && (
+                  <p className="text-green-600 font-medium mt-2">
+                    ¡Ahorras ${discountAmount.toFixed(2)}!
+                  </p>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-4 mb-6">
                 <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
                   {product.in_stock ? 'En Stock' : 'Agotado'}
                 </Badge>
+                
+                <span className="text-sm text-gray-500">
+                  {product.categories?.name || 'Sin categoría'}
+                </span>
               </div>
-              
-              <span className="text-sm text-gray-500 block mb-6">
-                {product.categories?.name || 'Sin categoría'}
-              </span>
             </div>
             
             <div className="prose prose-gray max-w-none">
