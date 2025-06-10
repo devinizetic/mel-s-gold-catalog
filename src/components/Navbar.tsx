@@ -53,8 +53,12 @@ const Navbar: React.FC = () => {
   return (
     <nav className="bg-white border-b border-gray-100 py-4 px-6 w-full sticky top-0 z-50">
       <div className="container mx-auto flex justify-between items-center">
-        <Link to="/" className="font-serif text-2xl font-semibold text-gold">
-          Las Joyas de Mel
+        <Link to="/" className="flex items-center justify-center">
+          <img 
+            src="/lovable-uploads/62613cf4-ce8e-498a-976f-5fb789cc1d55.png" 
+            alt="Las Joyas de Mel" 
+            className="h-20 w-auto"
+          />
         </Link>
         
         <div className="flex items-center space-x-4">
