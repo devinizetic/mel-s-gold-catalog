@@ -1,12 +1,11 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Product } from '@/types';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
-import { useToast } from '@/components/ui/use-toast';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Product } from "@/types";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { ShoppingCart } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { useToast } from "@/components/ui/use-toast";
 
 interface ProductCardProps {
   product: Product;
@@ -19,12 +18,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!product.in_stock) return;
-    
+
     addItem(product);
     toast({
-      title: 'Producto agregado',
+      title: "Producto agregado",
       description: `${product.name} se agregó al carrito`,
     });
   };
@@ -34,7 +33,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <Link to={`/products/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           {product.image_url ? (
-            <img 
+            <img
               src={product.image_url}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -46,7 +45,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           )}
         </div>
       </Link>
-      
+
       <div className="p-4">
         <Link to={`/products/${product.id}`}>
           <div className="flex justify-between items-start mb-2">
@@ -58,17 +57,24 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             </span>
           </div>
         </Link>
-        
+
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1">
             <span className="text-sm text-gray-500">
-              {(product as any).categories?.name || 'Sin categoría'}
+              {(product as any).categories?.name || "Sin categoría"}
             </span>
-            <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600 w-fit" : "text-gray-500 w-fit"}>
-              {product.in_stock ? 'En Stock' : 'Agotado'}
+            <Badge
+              variant={product.in_stock ? "outline" : "secondary"}
+              className={
+                product.in_stock
+                  ? "border-green-500 text-green-600 w-fit"
+                  : "text-gray-500 w-fit"
+              }
+            >
+              {product.in_stock ? "En Stock" : "Agotado"}
             </Badge>
           </div>
-          
+
           {product.in_stock && (
             <Button
               size="sm"
