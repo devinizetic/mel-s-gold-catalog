@@ -1,7 +1,6 @@
 
-import React, { createContext, useContext, useState, useCallback } from "react";
+import React, { createContext, useContext, useState, useCallback, useMemo } from "react";
 import { Product } from "@/types";
-import { useDiscountCalculation } from "@/hooks/useDiscountCalculation";
 
 interface CartItem {
   id: string;
@@ -25,6 +24,27 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 interface CartProviderProps {
   children: React.ReactNode;
 }
+
+// Helper function to calculate discount outside of component
+const calculateDiscountedPrice = (price: number, discountPercentage: number): number => {
+  if (discountPercentage <= 0) return price;
+  const discountAmount = (price * discountPercentage) / 100;
+  return price - discountAmount;
+};
+
+// Helper function to get discount legend text
+const getDiscountLegendText = (discountType: string): string => {
+  switch (discountType) {
+    case 'cash':
+      return 'Pagando en efectivo';
+    case 'card':
+      return 'Pagando con tarjeta';
+    case 'all':
+      return 'Con todos los medios de pago';
+    default:
+      return 'Con todos los medios de pago';
+  }
+};
 
 export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -73,16 +93,20 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     setItems([]);
   }, []);
 
-  // Calculate total using discounted prices
-  const total = items.reduce((sum, item) => {
-    const { discountedPrice } = useDiscountCalculation(
-      item.product.price, 
-      item.product.discount_percentage || 0
-    );
-    return sum + discountedPrice * item.quantity;
-  }, 0);
+  // Calculate total using useMemo to avoid recalculating on every render
+  const total = useMemo(() => {
+    return items.reduce((sum, item) => {
+      const discountedPrice = calculateDiscountedPrice(
+        item.product.price, 
+        item.product.discount_percentage || 0
+      );
+      return sum + discountedPrice * item.quantity;
+    }, 0);
+  }, [items]);
 
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const itemCount = useMemo(() => {
+    return items.reduce((sum, item) => sum + item.quantity, 0);
+  }, [items]);
 
   const generateWhatsAppMessage = useCallback(() => {
     if (items.length === 0) return "";
@@ -90,7 +114,8 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     let message = "*Pedido de Las Joyas de Mel*\n\n";
 
     items.forEach((item, index) => {
-      const { discountedPrice, hasDiscount } = useDiscountCalculation(
+      const hasDiscount = (item.product.discount_percentage || 0) > 0;
+      const discountedPrice = calculateDiscountedPrice(
         item.product.price, 
         item.product.discount_percentage || 0
       );
@@ -102,6 +127,7 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         message += `   Precio original: $${item.product.price.toFixed(2)}\n`;
         message += `   Precio con descuento: $${discountedPrice.toFixed(2)}\n`;
         message += `   Descuento: -${item.product.discount_percentage}%\n`;
+        message += `   ${getDiscountLegendText(item.product.discount_type || 'all')}\n`;
       } else {
         message += `   Precio unitario: $${discountedPrice.toFixed(2)}\n`;
       }

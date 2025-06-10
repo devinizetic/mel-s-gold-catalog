@@ -2,7 +2,7 @@
 import React from 'react';
 
 interface DiscountLegendProps {
-  discountType: 'cash' | 'card' | 'all';
+  discountType: string; // Changed from union type to string
   hasDiscount: boolean;
   className?: string;
 }
@@ -14,7 +14,7 @@ const DiscountLegend: React.FC<DiscountLegendProps> = ({
 }) => {
   if (!hasDiscount) return null;
 
-  const getLegendText = (type: 'cash' | 'card' | 'all'): string => {
+  const getLegendText = (type: string): string => {
     switch (type) {
       case 'cash':
         return 'Pagando en efectivo';
