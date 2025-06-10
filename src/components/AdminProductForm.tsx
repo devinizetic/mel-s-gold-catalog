@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useToast } from '@/hooks/use-toast';
@@ -15,6 +15,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from '@/components/ui/form';
 import { Product, Category } from '@/types';
 import { createProduct, updateProduct, uploadProductImage } from '@/lib/supabaseClient';
@@ -39,9 +40,21 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
       in_stock: true,
       is_featured: false,
       is_in_catalog: true,
+      discount_percentage: 0,
       image: '',
     },
   });
+
+  const watchPrice = form.watch('price');
+  const watchDiscount = form.watch('discount_percentage');
+
+  const discountedPrice = useMemo(() => {
+    if (watchDiscount > 0 && watchPrice > 0) {
+      const discount = (watchPrice * watchDiscount) / 100;
+      return watchPrice - discount;
+    }
+    return watchPrice;
+  }, [watchPrice, watchDiscount]);
 
   useEffect(() => {
     if (product) {
@@ -53,6 +66,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         in_stock: product.in_stock,
         is_featured: product.is_featured || false,
         is_in_catalog: product.is_in_catalog !== false,
+        discount_percentage: product.discount_percentage || 0,
         image: '',
       });
     }
@@ -74,6 +88,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         in_stock: data.in_stock,
         is_featured: data.is_featured,
         is_in_catalog: data.is_in_catalog,
+        discount_percentage: data.discount_percentage,
         image_url: imageUrl,
       };
       
@@ -136,13 +151,13 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
           )}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <FormField
             control={form.control}
             name="price"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Precio ($)</FormLabel>
+                <FormLabel>Precio Original ($)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -153,6 +168,31 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
                     onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="discount_percentage"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Descuento (%)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    max="100"
+                    placeholder="0"
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                  />
+                </FormControl>
+                <FormDescription>
+                  Porcentaje de descuento (0-100%)
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -183,6 +223,32 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             )}
           />
         </div>
+
+        {watchDiscount > 0 && watchPrice > 0 && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-green-800">Vista previa del precio</p>
+                <div className="flex items-center gap-3 mt-1">
+                  <span className="text-lg font-bold text-green-600">
+                    ${discountedPrice.toFixed(2)}
+                  </span>
+                  <span className="text-sm text-gray-500 line-through">
+                    ${watchPrice.toFixed(2)}
+                  </span>
+                  <span className="text-sm bg-red-500 text-white px-2 py-1 rounded">
+                    -{watchDiscount}%
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-green-600 font-medium">
+                  Ahorro: ${((watchPrice * watchDiscount) / 100).toFixed(2)}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FormField

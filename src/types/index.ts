@@ -9,6 +9,7 @@ export interface Product {
   in_stock: boolean;
   is_featured: boolean;
   is_in_catalog: boolean;
+  discount_percentage: number;
   created_at: string;
 }
 

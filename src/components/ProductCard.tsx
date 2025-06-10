@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Product } from "@/types";
@@ -6,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/components/ui/use-toast";
+import PriceDisplay from "@/components/PriceDisplay";
 
 interface ProductCardProps {
   product: Product;
@@ -32,23 +34,31 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     <div
       className="group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 h-full animate-fade-in hover:border-gold/30"
       style={{
-        transform: "translateZ(0)", // Hardware acceleration
-        backfaceVisibility: "hidden", // Smoother animations
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden",
         perspective: "1000px",
       }}
     >
       <Link to={`/products/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-gray-100">
+          {product.discount_percentage > 0 && (
+            <div className="absolute top-2 left-2 z-10">
+              <Badge className="bg-red-500 text-white text-xs px-2 py-1 font-medium">
+                -{product.discount_percentage}% OFF
+              </Badge>
+            </div>
+          )}
+          
           {product.image_url ? (
             <img
               src={product.image_url}
               alt={product.name}
               className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
               style={{
-                transform: "translateZ(0)", // Hardware acceleration for images
+                transform: "translateZ(0)",
                 willChange: "transform",
               }}
-              loading="lazy" // Improve performance
+              loading="lazy"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gray-200 transition-colors duration-300 group-hover:bg-gray-300">
@@ -61,14 +71,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="p-4">
         <Link to={`/products/${product.id}`}>
           <div className="flex justify-between items-start mb-2">
-            <h3 className="font-serif text-lg font-medium text-gray-900 group-hover:text-gold transition-colors duration-300 line-clamp-2">
+            <h3 className="font-serif text-lg font-medium text-gray-900 group-hover:text-gold transition-colors duration-300 line-clamp-2 flex-1">
               {product.name}
             </h3>
-            <span className="font-medium text-gold whitespace-nowrap ml-2">
-              ${product.price.toFixed(2)}
-            </span>
           </div>
         </Link>
+
+        <div className="mb-3">
+          <PriceDisplay 
+            price={product.price} 
+            discountPercentage={product.discount_percentage}
+            size="md"
+            showBadge={false}
+          />
+        </div>
 
         <div className="flex justify-between items-center">
           <div className="flex flex-col gap-1">
