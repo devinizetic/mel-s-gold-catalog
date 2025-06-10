@@ -1,5 +1,7 @@
+
 import React, { createContext, useContext, useState, useCallback } from "react";
 import { Product } from "@/types";
+import { useDiscountCalculation } from "@/hooks/useDiscountCalculation";
 
 interface CartItem {
   id: string;
@@ -71,10 +73,15 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     setItems([]);
   }, []);
 
-  const total = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
+  // Calculate total using discounted prices
+  const total = items.reduce((sum, item) => {
+    const { discountedPrice } = useDiscountCalculation(
+      item.product.price, 
+      item.product.discount_percentage || 0
+    );
+    return sum + discountedPrice * item.quantity;
+  }, 0);
+
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
 
   const generateWhatsAppMessage = useCallback(() => {
@@ -83,12 +90,23 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     let message = "*Pedido de Las Joyas de Mel*\n\n";
 
     items.forEach((item, index) => {
+      const { discountedPrice, hasDiscount } = useDiscountCalculation(
+        item.product.price, 
+        item.product.discount_percentage || 0
+      );
+
       message += `${index + 1}. *${item.product.name}*\n`;
       message += `   Cantidad: ${item.quantity}\n`;
-      message += `   Precio unitario: $${item.product.price.toFixed(2)}\n`;
-      message += `   Subtotal: $${(item.product.price * item.quantity).toFixed(
-        2
-      )}\n\n`;
+      
+      if (hasDiscount) {
+        message += `   Precio original: $${item.product.price.toFixed(2)}\n`;
+        message += `   Precio con descuento: $${discountedPrice.toFixed(2)}\n`;
+        message += `   Descuento: -${item.product.discount_percentage}%\n`;
+      } else {
+        message += `   Precio unitario: $${discountedPrice.toFixed(2)}\n`;
+      }
+      
+      message += `   Subtotal: $${(discountedPrice * item.quantity).toFixed(2)}\n\n`;
     });
 
     message += `*Total: $${total.toFixed(2)}*\n\n`;

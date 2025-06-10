@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import SkeletonLoader from '@/components/SkeletonLoader';
 import WhatsAppButton from '@/components/WhatsAppButton';
 import PriceDisplay from '@/components/PriceDisplay';
+import DiscountLegend from '@/components/DiscountLegend';
 import { ChevronLeft, ShoppingCart } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/components/ui/use-toast';
@@ -119,9 +120,15 @@ const ProductDetail: React.FC = () => {
               <div className="mb-4">
                 <PriceDisplay 
                   price={product.price} 
-                  discountPercentage={product.discount_percentage}
+                  discountPercentage={product.discount_percentage || 0}
                   size="lg"
                   showBadge={false}
+                />
+                
+                <DiscountLegend 
+                  discountType={product.discount_type || 'all'} 
+                  hasDiscount={hasDiscount}
+                  className="mt-2 text-sm"
                 />
                 
                 {hasDiscount && (

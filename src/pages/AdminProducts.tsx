@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import {
@@ -147,6 +148,19 @@ const AdminProducts: React.FC = () => {
     }
   };
 
+  const getDiscountTypeLabel = (type: string) => {
+    switch (type) {
+      case 'cash':
+        return 'Efectivo';
+      case 'card':
+        return 'Tarjeta';
+      case 'all':
+        return 'Todos';
+      default:
+        return 'Todos';
+    }
+  };
+
   if (isCheckingAuth) {
     return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
   }
@@ -195,6 +209,7 @@ const AdminProducts: React.FC = () => {
                       <TableHead>Categoría</TableHead>
                       <TableHead>Precio</TableHead>
                       <TableHead>Descuento</TableHead>
+                      <TableHead>Tipo Descuento</TableHead>
                       <TableHead>Estado</TableHead>
                       <TableHead>Destacado</TableHead>
                       <TableHead>En Catálogo</TableHead>
@@ -236,6 +251,15 @@ const AdminProducts: React.FC = () => {
                             </Badge>
                           ) : (
                             <span className="text-gray-400 text-sm">Sin descuento</span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {product.discount_percentage > 0 ? (
+                            <Badge variant="outline" className="text-xs">
+                              {getDiscountTypeLabel(product.discount_type || 'all')}
+                            </Badge>
+                          ) : (
+                            <span className="text-gray-400 text-sm">-</span>
                           )}
                         </TableCell>
                         <TableCell>
@@ -317,7 +341,7 @@ const AdminProducts: React.FC = () => {
             <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               Eliminar
             </AlertDialogAction>
-          </AlertDialogFooter>
+            </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>

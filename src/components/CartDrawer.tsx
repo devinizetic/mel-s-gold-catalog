@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useCart } from "@/context/CartContext";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import {
 import { Plus, Minus, Trash2, ShoppingCart } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { Badge } from "@/components/ui/badge";
+import PriceDisplay from "@/components/PriceDisplay";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -88,9 +90,15 @@ const CartDrawer: React.FC<CartDrawerProps> = ({
                       <h4 className="font-medium text-sm">
                         {item.product.name}
                       </h4>
-                      <p className="text-gold font-medium">
-                        ${item.product.price.toFixed(2)}
-                      </p>
+                      
+                      <div className="mb-2">
+                        <PriceDisplay 
+                          price={item.product.price} 
+                          discountPercentage={item.product.discount_percentage || 0}
+                          size="sm"
+                          showBadge={false}
+                        />
+                      </div>
 
                       <div className="flex items-center gap-2 mt-2">
                         <Button

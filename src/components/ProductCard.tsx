@@ -8,6 +8,7 @@ import { ShoppingCart } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useToast } from "@/components/ui/use-toast";
 import PriceDisplay from "@/components/PriceDisplay";
+import DiscountLegend from "@/components/DiscountLegend";
 
 interface ProductCardProps {
   product: Product;
@@ -30,6 +31,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     });
   };
 
+  const hasDiscount = (product.discount_percentage || 0) > 0;
+
   return (
     <div
       className="group block bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-all duration-300 h-full animate-fade-in hover:border-gold/30"
@@ -41,7 +44,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       <Link to={`/products/${product.id}`}>
         <div className="relative aspect-square overflow-hidden bg-gray-100">
-          {product.discount_percentage > 0 && (
+          {hasDiscount && (
             <div className="absolute top-2 left-2 z-10">
               <Badge className="bg-red-500 text-white text-xs px-2 py-1 font-medium">
                 -{product.discount_percentage}% OFF
@@ -77,12 +80,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </div>
         </Link>
 
-        <div className="mb-3">
+        <div className="mb-2">
           <PriceDisplay 
             price={product.price} 
-            discountPercentage={product.discount_percentage}
+            discountPercentage={product.discount_percentage || 0}
             size="md"
             showBadge={false}
+          />
+          <DiscountLegend 
+            discountType={product.discount_type || 'all'} 
+            hasDiscount={hasDiscount}
+            className="mt-1"
           />
         </div>
 

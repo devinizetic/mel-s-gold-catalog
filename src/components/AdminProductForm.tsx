@@ -41,6 +41,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
       is_featured: false,
       is_in_catalog: true,
       discount_percentage: 0,
+      discount_type: 'all',
       image: '',
     },
   });
@@ -67,6 +68,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         is_featured: product.is_featured || false,
         is_in_catalog: product.is_in_catalog !== false,
         discount_percentage: product.discount_percentage || 0,
+        discount_type: product.discount_type || 'all',
         image: '',
       });
     }
@@ -89,6 +91,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         is_featured: data.is_featured,
         is_in_catalog: data.is_in_catalog,
         discount_percentage: data.discount_percentage,
+        discount_type: data.discount_type,
         image_url: imageUrl,
       };
       
@@ -151,7 +154,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
           )}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="price"
@@ -173,6 +176,33 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             )}
           />
 
+          <FormField
+            control={form.control}
+            name="category_id"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Categoría</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Seleccionar categoría" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
             name="discount_percentage"
@@ -197,27 +227,28 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
-            name="category_id"
+            name="discount_type"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Categoría</FormLabel>
+                <FormLabel>Tipo de Descuento</FormLabel>
                 <Select onValueChange={field.onChange} value={field.value}>
                   <FormControl>
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar categoría" />
+                      <SelectValue placeholder="Seleccionar tipo" />
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {categories.map((category) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
+                    <SelectItem value="all">Todos los medios</SelectItem>
+                    <SelectItem value="cash">Efectivo</SelectItem>
+                    <SelectItem value="card">Tarjeta</SelectItem>
                   </SelectContent>
                 </Select>
+                <FormDescription>
+                  Método de pago para aplicar descuento
+                </FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -10,6 +10,7 @@ export interface Product {
   is_featured: boolean;
   is_in_catalog: boolean;
   discount_percentage: number;
+  discount_type: 'cash' | 'card' | 'all';
   created_at: string;
 }
 

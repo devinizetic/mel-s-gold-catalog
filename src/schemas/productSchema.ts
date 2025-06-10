@@ -10,6 +10,7 @@ export const productSchema = z.object({
   is_featured: z.boolean(),
   is_in_catalog: z.boolean(),
   discount_percentage: z.number().min(0, 'El descuento no puede ser negativo').max(100, 'El descuento no puede ser mayor a 100'),
+  discount_type: z.enum(['cash', 'card', 'all']),
   image: z.instanceof(File).optional().or(z.literal('')),
 });
 
