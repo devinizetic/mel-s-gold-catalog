@@ -69,9 +69,15 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({
     }
     return watchPrice;
   }, [watchPrice, watchDiscount]);
-
   useEffect(() => {
     if (product) {
+      const validDiscountTypes = ["cash", "card", "all"] as const;
+      const discountType = validDiscountTypes.includes(
+        product.discount_type as any
+      )
+        ? (product.discount_type as "cash" | "card" | "all")
+        : "all";
+
       form.reset({
         name: product.name,
         description: product.description,
@@ -81,7 +87,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({
         is_featured: product.is_featured || false,
         is_in_catalog: product.is_in_catalog !== false,
         discount_percentage: product.discount_percentage || 0,
-        discount_type: product.discount_type || "all",
+        discount_type: discountType,
         image: "",
       });
     }
