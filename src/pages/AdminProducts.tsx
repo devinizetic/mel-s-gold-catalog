@@ -19,7 +19,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogScrollArea,
 } from "@/components/ui/dialog";
 import {
   AlertDialog,
@@ -190,10 +189,18 @@ const AdminProducts: React.FC = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3">
-            <Button variant="outline" asChild className="w-full sm:w-auto order-3 sm:order-1">
+            <Button
+              variant="outline"
+              asChild
+              className="w-full sm:w-auto order-3 sm:order-1"
+            >
               <Link to="/admin">Volver al Panel</Link>
             </Button>
-            <Button variant="outline" asChild className="w-full sm:w-auto order-2">
+            <Button
+              variant="outline"
+              asChild
+              className="w-full sm:w-auto order-2"
+            >
               <Link to="/admin/categories">Gestionar Categorías</Link>
             </Button>
             <Button
@@ -216,14 +223,28 @@ const AdminProducts: React.FC = () => {
                     <TableRow>
                       <TableHead className="min-w-[60px]">Imagen</TableHead>
                       <TableHead className="min-w-[150px]">Nombre</TableHead>
-                      <TableHead className="hidden sm:table-cell">Categoría</TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Categoría
+                      </TableHead>
                       <TableHead className="min-w-[100px]">Precio</TableHead>
-                      <TableHead className="hidden md:table-cell">Descuento</TableHead>
-                      <TableHead className="hidden lg:table-cell">Tipo Descuento</TableHead>
-                      <TableHead className="hidden sm:table-cell">Estado</TableHead>
-                      <TableHead className="hidden md:table-cell">Destacado</TableHead>
-                      <TableHead className="hidden lg:table-cell">En Catálogo</TableHead>
-                      <TableHead className="text-right min-w-[140px]">Acciones</TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Descuento
+                      </TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        Tipo Descuento
+                      </TableHead>
+                      <TableHead className="hidden sm:table-cell">
+                        Estado
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell">
+                        Destacado
+                      </TableHead>
+                      <TableHead className="hidden lg:table-cell">
+                        En Catálogo
+                      </TableHead>
+                      <TableHead className="text-right min-w-[140px]">
+                        Acciones
+                      </TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -248,7 +269,8 @@ const AdminProducts: React.FC = () => {
                           <div>
                             <div className="font-medium">{product.name}</div>
                             <div className="sm:hidden text-xs text-gray-500 mt-1">
-                              {(product as any).categories?.name || "Sin categoría"}
+                              {(product as any).categories?.name ||
+                                "Sin categoría"}
                             </div>
                           </div>
                         </TableCell>
@@ -371,22 +393,21 @@ const AdminProducts: React.FC = () => {
           </div>
         )}
       </div>
-      
       {/* Create/Edit Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="w-full max-w-2xl">
-          <DialogHeader>
+        <DialogContent className="w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] mx-4 sm:mx-auto flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>
               {selectedProduct ? "Editar Producto" : "Crear Nuevo Producto"}
             </DialogTitle>
           </DialogHeader>
-          <DialogScrollArea>
+          <div className="flex-1 overflow-y-auto pr-2">
             <AdminProductForm
               product={selectedProduct || undefined}
               categories={categories}
               onSuccess={handleFormSuccess}
             />
-          </DialogScrollArea>
+          </div>
         </DialogContent>
       </Dialog>
 
