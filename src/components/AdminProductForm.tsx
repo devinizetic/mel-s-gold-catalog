@@ -1,13 +1,18 @@
-
-import React, { useEffect, useMemo } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useToast } from '@/hooks/use-toast';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Switch } from '@/components/ui/switch';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import React, { useEffect, useMemo } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useToast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -16,10 +21,14 @@ import {
   FormLabel,
   FormMessage,
   FormDescription,
-} from '@/components/ui/form';
-import { Product, Category } from '@/types';
-import { createProduct, updateProduct, uploadProductImage } from '@/lib/supabaseClient';
-import { productSchema, ProductFormData } from '@/schemas/productSchema';
+} from "@/components/ui/form";
+import { Product, Category } from "@/types";
+import {
+  createProduct,
+  updateProduct,
+  uploadProductImage,
+} from "@/lib/supabaseClient";
+import { productSchema, ProductFormData } from "@/schemas/productSchema";
 
 interface AdminProductFormProps {
   product?: Product;
@@ -27,27 +36,31 @@ interface AdminProductFormProps {
   onSuccess: () => void;
 }
 
-const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories, onSuccess }) => {
+const AdminProductForm: React.FC<AdminProductFormProps> = ({
+  product,
+  categories,
+  onSuccess,
+}) => {
   const { toast } = useToast();
 
   const form = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       price: 0,
-      category_id: '',
+      category_id: "",
       in_stock: true,
       is_featured: false,
       is_in_catalog: true,
       discount_percentage: 0,
-      discount_type: 'all',
-      image: '',
+      discount_type: "all",
+      image: "",
     },
   });
 
-  const watchPrice = form.watch('price');
-  const watchDiscount = form.watch('discount_percentage');
+  const watchPrice = form.watch("price");
+  const watchDiscount = form.watch("discount_percentage");
 
   const discountedPrice = useMemo(() => {
     if (watchDiscount > 0 && watchPrice > 0) {
@@ -56,9 +69,15 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
     }
     return watchPrice;
   }, [watchPrice, watchDiscount]);
-
   useEffect(() => {
     if (product) {
+      const validDiscountTypes = ["cash", "card", "all"] as const;
+      const discountType = validDiscountTypes.includes(
+        product.discount_type as any
+      )
+        ? (product.discount_type as "cash" | "card" | "all")
+        : "all";
+
       form.reset({
         name: product.name,
         description: product.description,
@@ -68,20 +87,20 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         is_featured: product.is_featured || false,
         is_in_catalog: product.is_in_catalog !== false,
         discount_percentage: product.discount_percentage || 0,
-        discount_type: product.discount_type || 'all',
-        image: '',
+        discount_type: discountType,
+        image: "",
       });
     }
   }, [product, form]);
 
   const onSubmit = async (data: ProductFormData) => {
     try {
-      let imageUrl = product?.image_url || '';
-      
+      let imageUrl = product?.image_url || "";
+
       if (data.image instanceof File) {
         imageUrl = await uploadProductImage(data.image);
       }
-      
+
       const productData = {
         name: data.name,
         description: data.description,
@@ -94,31 +113,30 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
         discount_type: data.discount_type,
         image_url: imageUrl,
       };
-      
+
       if (product?.id) {
         await updateProduct(product.id, productData);
         toast({
-          title: 'Producto actualizado',
-          description: 'El producto ha sido actualizado exitosamente.',
+          title: "Producto actualizado",
+          description: "El producto ha sido actualizado exitosamente.",
         });
       } else {
         await createProduct(productData);
         toast({
-          title: 'Producto creado',
-          description: 'El producto ha sido creado exitosamente.',
+          title: "Producto creado",
+          description: "El producto ha sido creado exitosamente.",
         });
       }
-      
+
       onSuccess();
     } catch (error: any) {
       toast({
-        title: 'Error',
-        description: error.message || 'Algo salió mal.',
-        variant: 'destructive',
+        title: "Error",
+        description: error.message || "Algo salió mal.",
+        variant: "destructive",
       });
     }
   };
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -135,7 +153,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             </FormItem>
           )}
         />
-        
+
         <FormField
           control={form.control}
           name="description"
@@ -153,7 +171,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             </FormItem>
           )}
         />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -168,7 +186,9 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
                     min="0"
                     placeholder="0.00"
                     {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -217,7 +237,9 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
                     max="100"
                     placeholder="0"
                     {...field}
-                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                    onChange={(e) =>
+                      field.onChange(parseFloat(e.target.value) || 0)
+                    }
                   />
                 </FormControl>
                 <FormDescription>
@@ -259,7 +281,9 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
           <div className="bg-green-50 border border-green-200 rounded-lg p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-green-800">Vista previa del precio</p>
+                <p className="text-sm font-medium text-green-800">
+                  Vista previa del precio
+                </p>
                 <div className="flex items-center gap-3 mt-1">
                   <span className="text-lg font-bold text-green-600">
                     ${discountedPrice.toFixed(2)}
@@ -280,7 +304,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             </div>
           </div>
         )}
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <FormField
             control={form.control}
@@ -297,7 +321,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="is_featured"
@@ -313,7 +337,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
               </FormItem>
             )}
           />
-          
+
           <FormField
             control={form.control}
             name="is_in_catalog"
@@ -330,7 +354,7 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
             )}
           />
         </div>
-        
+
         <FormField
           control={form.control}
           name="image"
@@ -344,33 +368,37 @@ const AdminProductForm: React.FC<AdminProductFormProps> = ({ product, categories
                   className="cursor-pointer"
                   onChange={(e) => {
                     const file = e.target.files?.[0];
-                    onChange(file || '');
+                    onChange(file || "");
                   }}
                   {...field}
                 />
               </FormControl>
               <FormMessage />
-              
+
               {product?.image_url && (
                 <div className="mt-2">
                   <p className="text-sm text-gray-500 mb-2">Imagen actual:</p>
-                  <img 
-                    src={product.image_url} 
-                    alt="Product preview" 
-                    className="h-40 w-auto object-contain border rounded-md" 
+                  <img
+                    src={product.image_url}
+                    alt="Product preview"
+                    className="h-40 w-auto object-contain border rounded-md"
                   />
                 </div>
               )}
             </FormItem>
           )}
         />
-        
-        <Button 
-          type="submit" 
+
+        <Button
+          type="submit"
           className="bg-gold hover:bg-gold-dark"
           disabled={form.formState.isSubmitting}
         >
-          {form.formState.isSubmitting ? 'Guardando...' : product ? 'Actualizar Producto' : 'Crear Producto'}
+          {form.formState.isSubmitting
+            ? "Guardando..."
+            : product
+            ? "Actualizar Producto"
+            : "Crear Producto"}
         </Button>
       </form>
     </Form>
