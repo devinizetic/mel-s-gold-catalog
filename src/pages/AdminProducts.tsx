@@ -1,12 +1,11 @@
-
-import React, { useState, useEffect } from 'react';
-import { Navigate, Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import { Navigate, Link } from "react-router-dom";
 import {
   supabase,
   getProducts,
   getCategories,
-  deleteProduct
-} from '@/lib/supabaseClient';
+  deleteProduct,
+} from "@/lib/supabaseClient";
 import {
   Table,
   TableBody,
@@ -14,13 +13,14 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -30,15 +30,15 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { useToast } from '@/components/ui/use-toast';
-import { Product, Category } from '@/types';
-import AdminProductForm from '@/components/AdminProductForm';
-import SkeletonLoader from '@/components/SkeletonLoader';
-import PriceDisplay from '@/components/PriceDisplay';
-import Navbar from '@/components/Navbar';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/use-toast";
+import { Product, Category } from "@/types";
+import AdminProductForm from "@/components/AdminProductForm";
+import SkeletonLoader from "@/components/SkeletonLoader";
+import PriceDisplay from "@/components/PriceDisplay";
+import Navbar from "@/components/Navbar";
 
 const AdminProducts: React.FC = () => {
   const [user, setUser] = useState<any>(null);
@@ -50,7 +50,7 @@ const AdminProducts: React.FC = () => {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
-  
+
   const { toast } = useToast();
 
   useEffect(() => {
@@ -62,9 +62,11 @@ const AdminProducts: React.FC = () => {
 
     checkUser();
 
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setUser(session?.user || null);
-    });
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
 
     return () => {
       authListener.subscription.unsubscribe();
@@ -74,21 +76,21 @@ const AdminProducts: React.FC = () => {
   useEffect(() => {
     const loadData = async () => {
       if (!user) return;
-      
+
       setIsLoading(true);
       try {
         const [productsData, categoriesData] = await Promise.all([
           getProducts(),
-          getCategories()
+          getCategories(),
         ]);
         setProducts(productsData);
         setCategories(categoriesData);
       } catch (error) {
-        console.error('Error loading data:', error);
+        console.error("Error loading data:", error);
         toast({
-          title: 'Error',
-          description: 'Failed to load products or categories.',
-          variant: 'destructive',
+          title: "Error",
+          description: "Failed to load products or categories.",
+          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -117,19 +119,19 @@ const AdminProducts: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (!productToDelete) return;
-    
+
     try {
       await deleteProduct(productToDelete.id);
       setProducts((prev) => prev.filter((p) => p.id !== productToDelete.id));
       toast({
-        title: 'Producto eliminado',
-        description: 'El producto ha sido eliminado exitosamente.',
+        title: "Producto eliminado",
+        description: "El producto ha sido eliminado exitosamente.",
       });
     } catch (error) {
       toast({
-        title: 'Error',
-        description: 'No se pudo eliminar el producto.',
-        variant: 'destructive',
+        title: "Error",
+        description: "No se pudo eliminar el producto.",
+        variant: "destructive",
       });
     } finally {
       setIsDeleteDialogOpen(false);
@@ -139,30 +141,34 @@ const AdminProducts: React.FC = () => {
 
   const handleFormSuccess = async () => {
     setIsDialogOpen(false);
-    
+
     try {
       const productsData = await getProducts();
       setProducts(productsData);
     } catch (error) {
-      console.error('Error reloading products:', error);
+      console.error("Error reloading products:", error);
     }
   };
 
   const getDiscountTypeLabel = (type: string) => {
     switch (type) {
-      case 'cash':
-        return 'Efectivo';
-      case 'card':
-        return 'Tarjeta';
-      case 'all':
-        return 'Todos';
+      case "cash":
+        return "Efectivo";
+      case "card":
+        return "Tarjeta";
+      case "all":
+        return "Todos";
       default:
-        return 'Todos';
+        return "Todos";
     }
   };
 
   if (isCheckingAuth) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando...</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Cargando...
+      </div>
+    );
   }
 
   if (!user) {
@@ -175,10 +181,14 @@ const AdminProducts: React.FC = () => {
       <div className="container mx-auto px-6 py-8">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-serif font-medium">Gestión de Productos</h1>
-            <p className="text-gray-500">Agregar, editar o eliminar productos del catálogo</p>
+            <h1 className="text-3xl font-serif font-medium">
+              Gestión de Productos
+            </h1>
+            <p className="text-gray-500">
+              Agregar, editar o eliminar productos del catálogo
+            </p>
           </div>
-          
+
           <div className="flex gap-4">
             <Button variant="outline" asChild>
               <Link to="/admin">Volver al Panel</Link>
@@ -186,7 +196,7 @@ const AdminProducts: React.FC = () => {
             <Button variant="outline" asChild>
               <Link to="/admin/categories">Gestionar Categorías</Link>
             </Button>
-            <Button 
+            <Button
               onClick={handleCreateProduct}
               className="bg-gold hover:bg-gold-dark"
             >
@@ -194,7 +204,7 @@ const AdminProducts: React.FC = () => {
             </Button>
           </div>
         </div>
-        
+
         {isLoading ? (
           <SkeletonLoader type="list" count={5} />
         ) : (
@@ -234,12 +244,18 @@ const AdminProducts: React.FC = () => {
                             )}
                           </div>
                         </TableCell>
-                        <TableCell className="font-medium">{product.name}</TableCell>
-                        <TableCell>{(product as any).categories?.name || 'Sin categoría'}</TableCell>
+                        <TableCell className="font-medium">
+                          {product.name}
+                        </TableCell>
                         <TableCell>
-                          <PriceDisplay 
-                            price={product.price} 
-                            discountPercentage={product.discount_percentage || 0}
+                          {(product as any).categories?.name || "Sin categoría"}
+                        </TableCell>
+                        <TableCell>
+                          <PriceDisplay
+                            price={product.price}
+                            discountPercentage={
+                              product.discount_percentage || 0
+                            }
                             size="sm"
                             showBadge={false}
                           />
@@ -250,31 +266,60 @@ const AdminProducts: React.FC = () => {
                               -{product.discount_percentage}%
                             </Badge>
                           ) : (
-                            <span className="text-gray-400 text-sm">Sin descuento</span>
+                            <span className="text-gray-400 text-sm">
+                              Sin descuento
+                            </span>
                           )}
                         </TableCell>
                         <TableCell>
                           {product.discount_percentage > 0 ? (
                             <Badge variant="outline" className="text-xs">
-                              {getDiscountTypeLabel(product.discount_type || 'all')}
+                              {getDiscountTypeLabel(
+                                product.discount_type || "all"
+                              )}
                             </Badge>
                           ) : (
                             <span className="text-gray-400 text-sm">-</span>
                           )}
                         </TableCell>
                         <TableCell>
-                          <Badge variant={product.in_stock ? "outline" : "secondary"} className={product.in_stock ? "border-green-500 text-green-600" : "text-gray-500"}>
-                            {product.in_stock ? 'En Stock' : 'Agotado'}
+                          <Badge
+                            variant={product.in_stock ? "outline" : "secondary"}
+                            className={
+                              product.in_stock
+                                ? "border-green-500 text-green-600"
+                                : "text-gray-500"
+                            }
+                          >
+                            {product.in_stock ? "En Stock" : "Agotado"}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={product.is_featured ? "default" : "outline"} className={product.is_featured ? "bg-gold hover:bg-gold-dark border-gold" : ""}>
-                            {product.is_featured ? 'Destacado' : 'No destacado'}
+                          <Badge
+                            variant={
+                              product.is_featured ? "default" : "outline"
+                            }
+                            className={
+                              product.is_featured
+                                ? "bg-gold hover:bg-gold-dark border-gold"
+                                : ""
+                            }
+                          >
+                            {product.is_featured ? "Destacado" : "No destacado"}
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={product.is_in_catalog ? "default" : "secondary"} className={product.is_in_catalog ? "bg-blue-500 hover:bg-blue-600" : ""}>
-                            {product.is_in_catalog ? 'Visible' : 'Oculto'}
+                          <Badge
+                            variant={
+                              product.is_in_catalog ? "default" : "secondary"
+                            }
+                            className={
+                              product.is_in_catalog
+                                ? "bg-blue-500 hover:bg-blue-600"
+                                : ""
+                            }
+                          >
+                            {product.is_in_catalog ? "Visible" : "Oculto"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right space-x-2">
@@ -300,9 +345,16 @@ const AdminProducts: React.FC = () => {
               </div>
             ) : (
               <div className="py-16 text-center">
-                <h3 className="text-xl font-medium text-gray-700 mb-2">No hay productos</h3>
-                <p className="text-gray-500 mb-6">Comience agregando su primer producto al catálogo.</p>
-                <Button onClick={handleCreateProduct} className="bg-gold hover:bg-gold-dark">
+                <h3 className="text-xl font-medium text-gray-700 mb-2">
+                  No hay productos
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  Comience agregando su primer producto al catálogo.
+                </p>
+                <Button
+                  onClick={handleCreateProduct}
+                  className="bg-gold hover:bg-gold-dark"
+                >
                   Agregar Producto
                 </Button>
               </div>
@@ -310,38 +362,48 @@ const AdminProducts: React.FC = () => {
           </div>
         )}
       </div>
-      
       {/* Create/Edit Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
+        <DialogContent className="w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] mx-4 sm:mx-auto flex flex-col">
+          <DialogHeader className="flex-shrink-0">
             <DialogTitle>
-              {selectedProduct ? 'Editar Producto' : 'Crear Nuevo Producto'}
+              {selectedProduct ? "Editar Producto" : "Crear Nuevo Producto"}
             </DialogTitle>
           </DialogHeader>
-          <AdminProductForm
-            product={selectedProduct || undefined}
-            categories={categories}
-            onSuccess={handleFormSuccess}
-          />
+          <ScrollArea className="flex-1 pr-2">
+            <div className="space-y-4 pb-4">
+              <AdminProductForm
+                product={selectedProduct || undefined}
+                categories={categories}
+                onSuccess={handleFormSuccess}
+              />
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
-      
+
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>¿Está seguro?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esto eliminará permanentemente {productToDelete?.name}. Esta acción no se puede deshacer.
+              Esto eliminará permanentemente {productToDelete?.name}. Esta
+              acción no se puede deshacer.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Eliminar
             </AlertDialogAction>
-            </AlertDialogFooter>
+          </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
     </div>
