@@ -19,8 +19,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogScrollArea,
 } from "@/components/ui/dialog";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -178,27 +178,27 @@ const AdminProducts: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="container mx-auto px-4 sm:px-6 py-8">
+        <div className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 mb-8">
           <div>
-            <h1 className="text-3xl font-serif font-medium">
+            <h1 className="text-2xl sm:text-3xl font-serif font-medium">
               Gestión de Productos
             </h1>
-            <p className="text-gray-500">
+            <p className="text-gray-500 text-sm sm:text-base">
               Agregar, editar o eliminar productos del catálogo
             </p>
           </div>
 
-          <div className="flex gap-4">
-            <Button variant="outline" asChild>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" asChild className="w-full sm:w-auto order-3 sm:order-1">
               <Link to="/admin">Volver al Panel</Link>
             </Button>
-            <Button variant="outline" asChild>
+            <Button variant="outline" asChild className="w-full sm:w-auto order-2">
               <Link to="/admin/categories">Gestionar Categorías</Link>
             </Button>
             <Button
               onClick={handleCreateProduct}
-              className="bg-gold hover:bg-gold-dark"
+              className="bg-gold hover:bg-gold-dark w-full sm:w-auto order-1 sm:order-3"
             >
               Agregar Producto
             </Button>
@@ -214,16 +214,16 @@ const AdminProducts: React.FC = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Imagen</TableHead>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Categoría</TableHead>
-                      <TableHead>Precio</TableHead>
-                      <TableHead>Descuento</TableHead>
-                      <TableHead>Tipo Descuento</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Destacado</TableHead>
-                      <TableHead>En Catálogo</TableHead>
-                      <TableHead className="text-right">Acciones</TableHead>
+                      <TableHead className="min-w-[60px]">Imagen</TableHead>
+                      <TableHead className="min-w-[150px]">Nombre</TableHead>
+                      <TableHead className="hidden sm:table-cell">Categoría</TableHead>
+                      <TableHead className="min-w-[100px]">Precio</TableHead>
+                      <TableHead className="hidden md:table-cell">Descuento</TableHead>
+                      <TableHead className="hidden lg:table-cell">Tipo Descuento</TableHead>
+                      <TableHead className="hidden sm:table-cell">Estado</TableHead>
+                      <TableHead className="hidden md:table-cell">Destacado</TableHead>
+                      <TableHead className="hidden lg:table-cell">En Catálogo</TableHead>
+                      <TableHead className="text-right min-w-[140px]">Acciones</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -245,9 +245,14 @@ const AdminProducts: React.FC = () => {
                           </div>
                         </TableCell>
                         <TableCell className="font-medium">
-                          {product.name}
+                          <div>
+                            <div className="font-medium">{product.name}</div>
+                            <div className="sm:hidden text-xs text-gray-500 mt-1">
+                              {(product as any).categories?.name || "Sin categoría"}
+                            </div>
+                          </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           {(product as any).categories?.name || "Sin categoría"}
                         </TableCell>
                         <TableCell>
@@ -260,7 +265,7 @@ const AdminProducts: React.FC = () => {
                             showBadge={false}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           {product.discount_percentage > 0 ? (
                             <Badge className="bg-red-500 text-white">
                               -{product.discount_percentage}%
@@ -271,7 +276,7 @@ const AdminProducts: React.FC = () => {
                             </span>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden lg:table-cell">
                           {product.discount_percentage > 0 ? (
                             <Badge variant="outline" className="text-xs">
                               {getDiscountTypeLabel(
@@ -282,7 +287,7 @@ const AdminProducts: React.FC = () => {
                             <span className="text-gray-400 text-sm">-</span>
                           )}
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden sm:table-cell">
                           <Badge
                             variant={product.in_stock ? "outline" : "secondary"}
                             className={
@@ -294,7 +299,7 @@ const AdminProducts: React.FC = () => {
                             {product.in_stock ? "En Stock" : "Agotado"}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden md:table-cell">
                           <Badge
                             variant={
                               product.is_featured ? "default" : "outline"
@@ -308,7 +313,7 @@ const AdminProducts: React.FC = () => {
                             {product.is_featured ? "Destacado" : "No destacado"}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="hidden lg:table-cell">
                           <Badge
                             variant={
                               product.is_in_catalog ? "default" : "secondary"
@@ -322,21 +327,25 @@ const AdminProducts: React.FC = () => {
                             {product.is_in_catalog ? "Visible" : "Oculto"}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-right space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleEditProduct(product)}
-                          >
-                            Editar
-                          </Button>
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDeleteClick(product)}
-                          >
-                            Eliminar
-                          </Button>
+                        <TableCell className="text-right">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditProduct(product)}
+                              className="w-full sm:w-auto"
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteClick(product)}
+                              className="w-full sm:w-auto"
+                            >
+                              Eliminar
+                            </Button>
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}
@@ -344,7 +353,7 @@ const AdminProducts: React.FC = () => {
                 </Table>
               </div>
             ) : (
-              <div className="py-16 text-center">
+              <div className="py-16 text-center px-4">
                 <h3 className="text-xl font-medium text-gray-700 mb-2">
                   No hay productos
                 </h3>
@@ -362,23 +371,22 @@ const AdminProducts: React.FC = () => {
           </div>
         )}
       </div>
+      
       {/* Create/Edit Product Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="w-full max-w-2xl max-h-[90vh] sm:max-h-[85vh] mx-4 sm:mx-auto flex flex-col">
-          <DialogHeader className="flex-shrink-0">
+        <DialogContent className="w-full max-w-2xl">
+          <DialogHeader>
             <DialogTitle>
               {selectedProduct ? "Editar Producto" : "Crear Nuevo Producto"}
             </DialogTitle>
           </DialogHeader>
-          <ScrollArea className="flex-1 pr-2">
-            <div className="space-y-4 pb-4">
-              <AdminProductForm
-                product={selectedProduct || undefined}
-                categories={categories}
-                onSuccess={handleFormSuccess}
-              />
-            </div>
-          </ScrollArea>
+          <DialogScrollArea>
+            <AdminProductForm
+              product={selectedProduct || undefined}
+              categories={categories}
+              onSuccess={handleFormSuccess}
+            />
+          </DialogScrollArea>
         </DialogContent>
       </Dialog>
 

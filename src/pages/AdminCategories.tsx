@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import {
@@ -19,6 +18,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogScrollArea,
 } from '@/components/ui/dialog';
 import {
   AlertDialog,
@@ -152,20 +152,20 @@ const AdminCategories: React.FC = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
-      <div className="container mx-auto px-6 py-8">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+      <div className="container mx-auto px-4 sm:px-6 py-8">
+        <div className="flex flex-col space-y-4 lg:flex-row lg:justify-between lg:items-center lg:space-y-0 mb-8">
           <div>
-            <h1 className="text-3xl font-serif font-medium">Gestión de Categorías</h1>
-            <p className="text-gray-500">Agregar, editar o eliminar categorías</p>
+            <h1 className="text-2xl sm:text-3xl font-serif font-medium">Gestión de Categorías</h1>
+            <p className="text-gray-500 text-sm sm:text-base">Agregar, editar o eliminar categorías</p>
           </div>
           
-          <div className="flex gap-4">
-            <Button variant="outline" asChild>
+          <div className="flex flex-col sm:flex-row gap-3">
+            <Button variant="outline" asChild className="w-full sm:w-auto">
               <Link to="/admin">Volver al Panel</Link>
             </Button>
             <Button 
               onClick={handleCreateCategory}
-              className="bg-gold hover:bg-gold-dark"
+              className="bg-gold hover:bg-gold-dark w-full sm:w-auto"
             >
               Agregar Categoría
             </Button>
@@ -177,55 +177,61 @@ const AdminCategories: React.FC = () => {
         ) : (
           <div className="bg-white rounded-lg shadow overflow-hidden">
             {categories.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Imagen</TableHead>
-                    <TableHead>Nombre</TableHead>
-                    <TableHead className="text-right">Acciones</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {categories.map((category) => (
-                    <TableRow key={category.id}>
-                      <TableCell className="w-24">
-                        {category.image_url ? (
-                          <div className="h-16 w-16 rounded-md overflow-hidden">
-                            <img 
-                              src={category.image_url} 
-                              alt={category.name} 
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                        ) : (
-                          <div className="h-16 w-16 bg-gray-100 rounded-md flex items-center justify-center">
-                            <Image size={24} className="text-gray-400" />
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditCategory(category)}
-                        >
-                          Editar
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteClick(category)}
-                        >
-                          Eliminar
-                        </Button>
-                      </TableCell>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-24">Imagen</TableHead>
+                      <TableHead>Nombre</TableHead>
+                      <TableHead className="text-right min-w-[140px]">Acciones</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <TableRow key={category.id}>
+                        <TableCell className="w-24">
+                          {category.image_url ? (
+                            <div className="h-12 w-12 sm:h-16 sm:w-16 rounded-md overflow-hidden">
+                              <img 
+                                src={category.image_url} 
+                                alt={category.name} 
+                                className="h-full w-full object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <div className="h-12 w-12 sm:h-16 sm:w-16 bg-gray-100 rounded-md flex items-center justify-center">
+                              <Image size={20} className="text-gray-400" />
+                            </div>
+                          )}
+                        </TableCell>
+                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleEditCategory(category)}
+                              className="w-full sm:w-auto"
+                            >
+                              Editar
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteClick(category)}
+                              className="w-full sm:w-auto"
+                            >
+                              Eliminar
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             ) : (
-              <div className="py-16 text-center">
+              <div className="py-16 text-center px-4">
                 <h3 className="text-xl font-medium text-gray-700 mb-2">No hay categorías</h3>
                 <p className="text-gray-500 mb-6">Comience agregando su primera categoría.</p>
                 <Button onClick={handleCreateCategory} className="bg-gold hover:bg-gold-dark">
@@ -245,11 +251,13 @@ const AdminCategories: React.FC = () => {
               {selectedCategory ? 'Editar Categoría' : 'Crear Nueva Categoría'}
             </DialogTitle>
           </DialogHeader>
-          <AdminCategoryForm
-            category={selectedCategory || undefined}
-            onSuccess={handleFormSuccess}
-            onCancel={() => setIsDialogOpen(false)}
-          />
+          <DialogScrollArea>
+            <AdminCategoryForm
+              category={selectedCategory || undefined}
+              onSuccess={handleFormSuccess}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </DialogScrollArea>
         </DialogContent>
       </Dialog>
       

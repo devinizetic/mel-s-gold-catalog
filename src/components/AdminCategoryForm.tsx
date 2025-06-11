@@ -90,7 +90,7 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="name"
@@ -111,8 +111,8 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           render={({ field: { value, onChange, ...field } }) => (
             <FormItem>
               <FormLabel>Imagen</FormLabel>
-              <div className="flex items-center space-x-4">
-                <div className="h-24 w-24 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <div className="h-24 w-24 bg-gray-100 rounded-md overflow-hidden flex items-center justify-center mx-auto sm:mx-0">
                   {imagePreview ? (
                     <img 
                       src={imagePreview} 
@@ -123,7 +123,7 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
                     <Image size={24} className="text-gray-400" />
                   )}
                 </div>
-                <div>
+                <div className="flex-1">
                   <FormControl>
                     <Input
                       type="file"
@@ -143,13 +143,18 @@ const AdminCategoryForm: React.FC<AdminCategoryFormProps> = ({
           )}
         />
         
-        <div className="flex justify-end space-x-2">
-          <Button type="button" variant="outline" onClick={onCancel}>
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
+          <Button 
+            type="button" 
+            variant="outline" 
+            onClick={onCancel}
+            className="w-full sm:w-auto order-2 sm:order-1"
+          >
             Cancelar
           </Button>
           <Button 
             type="submit" 
-            className="bg-gold hover:bg-gold-dark"
+            className="bg-gold hover:bg-gold-dark w-full sm:w-auto order-1 sm:order-2"
             disabled={form.formState.isSubmitting}
           >
             {form.formState.isSubmitting ? 'Guardando...' : category ? 'Actualizar' : 'Crear'}
